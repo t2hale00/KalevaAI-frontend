@@ -27,19 +27,75 @@ body {
   background: linear-gradient(135deg, #B09050 0%, #E0D0A0 100%);
   color: white;
   padding: 2rem 1rem;
-  text-align: center;
   box-shadow: 0 4px 6px -1px rgba(176, 144, 80, 0.3);
 }
 
-.app-header h1 {
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header-text {
+  text-align: left;
+}
+
+.header-text h1 {
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
 }
 
-.app-header p {
+.header-text p {
   font-size: 1.1rem;
   opacity: 0.9;
+  margin: 0;
+}
+
+/* Language Switcher */
+.language-switcher {
+  display: flex;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 0.25rem;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.lang-btn {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  min-width: 44px;
+}
+
+.lang-btn:hover {
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.lang-btn.active {
+  background: rgba(255, 255, 255, 0.95);
+  color: #B09050;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.lang-btn.active:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* Main content */
@@ -675,7 +731,17 @@ section h4 {
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .app-header h1 {
+  .header-content {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .header-text {
+    text-align: center;
+  }
+  
+  .header-text h1 {
     font-size: 2rem;
   }
   
@@ -727,8 +793,17 @@ section h4 {
     padding: 1.5rem 1rem;
   }
   
-  .app-header h1 {
+  .header-text h1 {
     font-size: 1.75rem;
+  }
+  
+  .language-switcher {
+    align-self: center;
+  }
+  
+  .lang-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
   }
   
   .dropzone {

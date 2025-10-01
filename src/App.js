@@ -1,8 +1,34 @@
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
+import { LanguageProvider, useLanguage } from './LanguageContext';
 import './App.css';
 
-function App() {
+// Language Switcher Component
+function LanguageSwitcher() {
+  const { language, switchLanguage } = useLanguage();
+  
+  return (
+    <div className="language-switcher">
+      <button 
+        className={`lang-btn ${language === 'en' ? 'active' : ''}`}
+        onClick={() => switchLanguage('en')}
+        title="English"
+      >
+        EN
+      </button>
+      <button 
+        className={`lang-btn ${language === 'fi' ? 'active' : ''}`}
+        onClick={() => switchLanguage('fi')}
+        title="Suomi"
+      >
+        FI
+      </button>
+    </div>
+  );
+}
+
+function AppContent() {
+  const { t } = useLanguage();
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [textContent, setTextContent] = useState('');
   const [processingStatus, setProcessingStatus] = useState('idle');
@@ -57,8 +83,13 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>KalevaAI</h1>
-        <p>AI-powered social media content adaptation for LinkedIn, Instagram, and Facebook</p>
+        <div className="header-content">
+          <div className="header-text">
+            <h1>{t('title')}</h1>
+            <p>{t('subtitle')}</p>
+          </div>
+          <LanguageSwitcher />
+        </div>
       </header>
 
       <main className="app-main">
@@ -67,82 +98,82 @@ function App() {
           <div className="input-grid">
             {/* Text Input - Left Side */}
             <div className="text-input-container">
-              <h2>📝 Enter Your Text Content</h2>
+              <h2>{t('textInputTitle')}</h2>
               <textarea
                 value={textContent}
                 onChange={(e) => setTextContent(e.target.value)}
-                placeholder="Enter your text content here... This could be a blog post, article, announcement, or any text you want to adapt for social media platforms."
+                placeholder={t('textInputPlaceholder')}
                 className="text-input"
                 rows={6}
               />
               <div className="text-input-info">
-                <small>AI will create platform-specific versions of your text</small>
+                <small>{t('textInputInfo')}</small>
               </div>
             </div>
 
             {/* File Upload - Right Side */}
             <div className="upload-container">
-              <h2>📁 Upload Media (Optional)</h2>
-              <div 
-                {...getRootProps()} 
-                className={`dropzone ${isDragActive ? 'active' : ''}`}
-              >
-                <input {...getInputProps()} />
-                <div className="dropzone-content">
-                  <div className="upload-icon">📁</div>
-                  <p>
-                    {isDragActive 
-                      ? 'Drop your files here...' 
-                      : 'Drag & drop files here, or click to select'
-                    }
-                  </p>
-                  <small>Supports images (JPEG, PNG, WebP) and videos (MP4, MOV, AVI)</small>
-                </div>
-              </div>
+              <h2>{t('uploadTitle')}</h2>
+          <div 
+            {...getRootProps()} 
+            className={`dropzone ${isDragActive ? 'active' : ''}`}
+          >
+            <input {...getInputProps()} />
+            <div className="dropzone-content">
+              <div className="upload-icon">📁</div>
+              <p>
+                {isDragActive 
+                      ? t('uploadDragActive')
+                      : t('uploadDragText')
+                }
+              </p>
+                  <small>{t('uploadSupported')}</small>
+            </div>
+          </div>
 
-              {/* Uploaded Files List */}
-              {uploadedFiles.length > 0 && (
-                <div className="uploaded-files">
-                  <h3>Uploaded Files ({uploadedFiles.length})</h3>
-                  <div className="files-grid">
-                    {uploadedFiles.map(file => (
-                      <div key={file.id} className="file-item">
-                        <div className="file-preview">
-                          {file.type.startsWith('image/') ? (
-                            <img src={file.preview} alt={file.name} />
-                          ) : (
-                            <div className="video-preview">
-                              <div className="video-icon">🎥</div>
-                              <span>{file.name}</span>
-                            </div>
-                          )}
+          {/* Uploaded Files List */}
+          {uploadedFiles.length > 0 && (
+            <div className="uploaded-files">
+                  <h3>{t('uploadedFiles')} ({uploadedFiles.length})</h3>
+              <div className="files-grid">
+                {uploadedFiles.map(file => (
+                  <div key={file.id} className="file-item">
+                    <div className="file-preview">
+                      {file.type.startsWith('image/') ? (
+                        <img src={file.preview} alt={file.name} />
+                      ) : (
+                        <div className="video-preview">
+                          <div className="video-icon">🎥</div>
+                          <span>{file.name}</span>
                         </div>
-                        <div className="file-info">
-                          <span className="file-name">{file.name}</span>
-                          <span className="file-size">
-                            {(file.size / 1024 / 1024).toFixed(2)} MB
-                          </span>
-                        </div>
-                        <button 
-                          className="remove-file"
-                          onClick={() => setUploadedFiles(prev => 
-                            prev.filter(f => f.id !== file.id)
-                          )}
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    ))}
+                      )}
+                    </div>
+                    <div className="file-info">
+                      <span className="file-name">{file.name}</span>
+                      <span className="file-size">
+                        {(file.size / 1024 / 1024).toFixed(2)} MB
+                      </span>
+                    </div>
+                    <button 
+                      className="remove-file"
+                      onClick={() => setUploadedFiles(prev => 
+                        prev.filter(f => f.id !== file.id)
+                      )}
+                    >
+                      ✕
+                    </button>
                   </div>
-                </div>
-              )}
+                ))}
+              </div>
+            </div>
+          )}
             </div>
           </div>
         </section>
 
         {/* Platform Selection */}
         <section className="platform-selection">
-          <h2>🎯 Select Target Platforms</h2>
+          <h2>{t('platformTitle')}</h2>
           <div className="platforms-grid">
             <label className="platform-option">
               <input
@@ -155,9 +186,9 @@ function App() {
               />
               <div className="platform-card">
                 <div className="platform-icon">💼</div>
-                <h3>LinkedIn</h3>
-                <p>Professional content</p>
-                <small>1200x627px images</small>
+                <h3>{t('linkedin')}</h3>
+                <p>{t('linkedinDesc')}</p>
+                <small>{t('linkedinSize')}</small>
               </div>
             </label>
 
@@ -172,9 +203,9 @@ function App() {
               />
               <div className="platform-card">
                 <div className="platform-icon">📸</div>
-                <h3>Instagram</h3>
-                <p>Visual storytelling</p>
-                <small>1080x1080px images</small>
+                <h3>{t('instagram')}</h3>
+                <p>{t('instagramDesc')}</p>
+                <small>{t('instagramSize')}</small>
               </div>
             </label>
 
@@ -189,9 +220,9 @@ function App() {
               />
               <div className="platform-card">
                 <div className="platform-icon">👥</div>
-                <h3>Facebook</h3>
-                <p>Community engagement</p>
-                <small>1200x630px images</small>
+                <h3>{t('facebook')}</h3>
+                <p>{t('facebookDesc')}</p>
+                <small>{t('facebookSize')}</small>
               </div>
             </label>
           </div>
@@ -207,10 +238,10 @@ function App() {
             {processingStatus === 'processing' ? (
               <>
                 <div className="spinner"></div>
-                Processing...
+                {t('processing')}
               </>
             ) : (
-              '🚀 Process Content'
+              t('processButton')
             )}
           </button>
         </section>
@@ -218,12 +249,12 @@ function App() {
         {/* Results Section */}
         {processedContent && (
           <section className="results-section">
-            <h2>✨ Processed Content</h2>
+            <h2>{t('resultsTitle')}</h2>
             
             {/* Images */}
             {processedContent.images.length > 0 && (
               <div className="content-group">
-                <h3>Images</h3>
+                <h3>{t('imagesTitle')}</h3>
                 <div className="platform-results">
                   {Object.entries(processedContent.platforms)
                     .filter(([_, selected]) => selected)
@@ -334,36 +365,36 @@ function App() {
 
             {/* Generated Captions for Media */}
             {(processedContent.images.length > 0 || processedContent.videos.length > 0) && (
-              <div className="content-group">
+            <div className="content-group">
                 <h3>Generated Media Captions</h3>
-                <div className="captions-section">
-                  {Object.entries(processedContent.platforms)
-                    .filter(([_, selected]) => selected)
-                    .map(([platform, _]) => (
-                      <div key={platform} className="platform-captions">
-                        <h4>{platform.charAt(0).toUpperCase() + platform.slice(1)} Captions</h4>
-                        <div className="caption-options">
-                          {[1, 2, 3].map(num => (
-                            <div key={num} className="caption-option">
-                              <p className="caption-text">
-                                {platform === 'linkedin' 
-                                  ? `Professional caption ${num} for LinkedIn with relevant hashtags and business focus.`
-                                  : platform === 'instagram'
-                                  ? `Engaging Instagram caption ${num} with emojis and visual storytelling elements.`
-                                  : `Conversational Facebook caption ${num} for community engagement and social interaction.`
-                                }
-                              </p>
-                              <div className="caption-actions">
-                                <button className="copy-btn">Copy</button>
-                                <button className="edit-btn">Edit</button>
-                              </div>
+              <div className="captions-section">
+                {Object.entries(processedContent.platforms)
+                  .filter(([_, selected]) => selected)
+                  .map(([platform, _]) => (
+                    <div key={platform} className="platform-captions">
+                      <h4>{platform.charAt(0).toUpperCase() + platform.slice(1)} Captions</h4>
+                      <div className="caption-options">
+                        {[1, 2, 3].map(num => (
+                          <div key={num} className="caption-option">
+                            <p className="caption-text">
+                              {platform === 'linkedin' 
+                                ? `Professional caption ${num} for LinkedIn with relevant hashtags and business focus.`
+                                : platform === 'instagram'
+                                ? `Engaging Instagram caption ${num} with emojis and visual storytelling elements.`
+                                : `Conversational Facebook caption ${num} for community engagement and social interaction.`
+                              }
+                            </p>
+                            <div className="caption-actions">
+                              <button className="copy-btn">Copy</button>
+                              <button className="edit-btn">Edit</button>
                             </div>
-                          ))}
-                        </div>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                </div>
+                    </div>
+                  ))}
               </div>
+            </div>
             )}
 
             {/* Download All */}
@@ -377,9 +408,18 @@ function App() {
       </main>
 
       <footer className="app-footer">
-        <p>KalevaAI - Powered by OpenCV & LLM</p>
+        <p>{t('footer')}</p>
       </footer>
     </div>
+  );
+}
+
+// Main App Component with Language Provider
+function App() {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
   );
 }
 
