@@ -3,6 +3,17 @@ import { useDropzone } from 'react-dropzone';
 import { LanguageProvider, useLanguage } from './LanguageContext';
 import './App.css';
 
+// Import newspaper logos
+import kalevaLogo from './logos/black/kalevablack.png';
+import lapinKansaLogo from './logos/black/lapinkansablack.png';
+import ilkkaPohjalainenLogo from './logos/black/ilkkapohjolainenblack.png';
+import koillissanomatLogo from './logos/black/koillissanomatblack.png';
+import rantalakeusLogo from './logos/black/rantalakeusblack.png';
+import iijokiseutuLogo from './logos/black/iijokiseutublack.png';
+import raahenSeutuLogo from './logos/black/raahenseutublack.png';
+import pyhajokiseutuLogo from './logos/black/pyhäjokiseutublack.png';
+import siikajokilaaksoLogo from './logos/black/siikajokilaaksoblack.png';
+
 // Language Switcher Component
 function LanguageSwitcher() {
   const { language, switchLanguage } = useLanguage();
@@ -31,13 +42,48 @@ function AppContent() {
   const { t } = useLanguage();
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [textContent, setTextContent] = useState('');
+  const [selectedPlatform, setSelectedPlatform] = useState('');
+  const [contentType, setContentType] = useState(''); // 'post' or 'story'
+  const [selectedLayout, setSelectedLayout] = useState('');
+  const [outputType, setOutputType] = useState(''); // 'static' or 'animated'
+  const [selectedNewspaper, setSelectedNewspaper] = useState('');
   const [processingStatus, setProcessingStatus] = useState('idle');
   const [processedContent, setProcessedContent] = useState(null);
-  const [selectedPlatforms, setSelectedPlatforms] = useState({
-    linkedin: true,
-    instagram: true,
-    facebook: true
-  });
+
+  // Layout options based on platform and content type
+  const getLayoutOptions = () => {
+    if (selectedPlatform === 'instagram') {
+      if (contentType === 'story') {
+        return [t('portrait')];
+      } else {
+        // For posts or when content type not selected, show all Instagram options
+        return [t('square'), t('portrait')];
+      }
+    } else if (selectedPlatform === 'facebook') {
+      if (contentType === 'story') {
+        return [t('portrait')];
+      } else {
+        // For posts or when content type not selected, show all Facebook options
+        return [t('square'), t('landscape')];
+      }
+    } else if (selectedPlatform === 'linkedin') {
+      // LinkedIn only supports posts, so always show landscape
+      return [t('landscape')];
+    }
+    return [];
+  };
+
+  const newspapers = [
+    'Kaleva',
+    'Lapin Kansa',
+    'Ilkka-Pohjalainen',
+    'Koillissanomat',
+    'Rantalakeus',
+    'Iijokiseutu',
+    'Raahen Seutu',
+    'Pyhäjokiseutu',
+    'Siikajokilaakso'
+  ];
 
   const onDrop = useCallback((acceptedFiles) => {
     const newFiles = acceptedFiles.map(file => ({
@@ -66,18 +112,52 @@ function AppContent() {
     // Simulate API call
     setTimeout(() => {
       setProcessedContent({
+        description: textContent,
+        platform: selectedPlatform,
+        contentType: contentType,
+        layout: selectedLayout,
+        outputType: outputType,
+        newspaper: selectedNewspaper,
         images: uploadedFiles.filter(f => f.type.startsWith('image/')),
-        videos: uploadedFiles.filter(f => f.type.startsWith('video/')),
-        textContent: textContent,
-        platforms: selectedPlatforms
+        videos: uploadedFiles.filter(f => f.type.startsWith('video/'))
       });
       setProcessingStatus('completed');
     }, 3000);
   };
 
-  const handleDownload = (platform, contentType) => {
+  const handleDownload = () => {
     // Simulate download functionality
-    console.log(`Downloading ${contentType} for ${platform}`);
+    console.log('Downloading branded graphic');
+  };
+
+  // Reset dependent selections when platform changes
+  const handlePlatformChange = (platform) => {
+    if (selectedPlatform === platform) {
+      setSelectedPlatform(''); // Unselect if clicking the same platform
+      setContentType('');
+      setSelectedLayout('');
+    } else {
+      setSelectedPlatform(platform); // Select the new platform
+      
+      // Auto-select for LinkedIn (only has Post and Landscape)
+      if (platform === 'linkedin') {
+        setContentType('post');
+        setSelectedLayout(t('landscape'));
+      } else {
+        setContentType('');
+        setSelectedLayout('');
+      }
+    }
+  };
+
+  // Handle content type changes
+  const handleContentTypeChange = (type) => {
+    if (contentType === type) {
+      setContentType(''); // Unselect if clicking the same content type
+    } else {
+      setContentType(type); // Select the new content type
+      // Don't reset layout - let user keep their selection
+    }
   };
 
   return (
@@ -93,27 +173,18 @@ function AppContent() {
       </header>
 
       <main className="app-main">
-        {/* Input Section - Side by Side */}
-        <section className="input-section">
-          <div className="input-grid">
-            {/* Text Input - Left Side */}
-            <div className="text-input-container">
-              <h2>{t('textInputTitle')}</h2>
-              <textarea
-                value={textContent}
-                onChange={(e) => setTextContent(e.target.value)}
-                placeholder={t('textInputPlaceholder')}
-                className="text-input"
-                rows={6}
-              />
-              <div className="text-input-info">
-                <small>{t('textInputInfo')}</small>
-              </div>
-            </div>
-
-            {/* File Upload - Right Side */}
-            <div className="upload-container">
-              <h2>{t('uploadTitle')}</h2>
+        <div className="split-container">
+          {/* LEFT SIDE - INPUTS */}
+          <div className="input-panel">
+            <h2>{t('inputConfiguration')}</h2>
+            
+            {/* Content Input Container */}
+            <div className="input-container">
+              <h3>{t('contentInput')}</h3>
+              <div className="content-input-grid">
+                {/* Image Upload */}
+                <div className="input-section">
+                  <h4>{t('uploadImage')}</h4>
           <div 
             {...getRootProps()} 
             className={`dropzone ${isDragActive ? 'active' : ''}`}
@@ -123,30 +194,23 @@ function AppContent() {
               <div className="upload-icon">📁</div>
               <p>
                 {isDragActive 
-                      ? t('uploadDragActive')
-                      : t('uploadDragText')
+                          ? 'Drop files here...'
+                          : 'Drag & drop images here, or click to select'
                 }
               </p>
-                  <small>{t('uploadSupported')}</small>
+                      <small>Supports: JPEG, PNG, WebP</small>
             </div>
           </div>
 
           {/* Uploaded Files List */}
           {uploadedFiles.length > 0 && (
             <div className="uploaded-files">
-                  <h3>{t('uploadedFiles')} ({uploadedFiles.length})</h3>
+                      <h5>Uploaded Files ({uploadedFiles.length})</h5>
               <div className="files-grid">
                 {uploadedFiles.map(file => (
                   <div key={file.id} className="file-item">
                     <div className="file-preview">
-                      {file.type.startsWith('image/') ? (
                         <img src={file.preview} alt={file.name} />
-                      ) : (
-                        <div className="video-preview">
-                          <div className="video-icon">🎥</div>
-                          <span>{file.name}</span>
-                        </div>
-                      )}
                     </div>
                     <div className="file-info">
                       <span className="file-name">{file.name}</span>
@@ -168,243 +232,534 @@ function AppContent() {
             </div>
           )}
             </div>
+
+                {/* Text Input */}
+                <div className="input-section">
+                  <h4>{t('textContent')}</h4>
+                  <textarea
+                    value={textContent}
+                    onChange={(e) => setTextContent(e.target.value)}
+                    placeholder="Enter your text content here..."
+                    className="text-input"
+                    rows={4}
+                  />
+              </div>
+              </div>
+              </div>
+
+            {/* Platform Container */}
+            <div className="input-container">
+              <h3>{t('socialMediaPlatform')}</h3>
+              <div className="platform-options">
+                <div
+                  className={`platform-option ${selectedPlatform === 'instagram' ? 'selected' : ''}`}
+                  onClick={() => handlePlatformChange('instagram')}
+                  title="Instagram"
+                >
+                  <div className="platform-icon instagram-icon">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <defs>
+                        <linearGradient id="instagram-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stopColor="#f09433"/>
+                          <stop offset="25%" stopColor="#e6683c"/>
+                          <stop offset="50%" stopColor="#dc2743"/>
+                          <stop offset="75%" stopColor="#cc2366"/>
+                          <stop offset="100%" stopColor="#bc1888"/>
+                        </linearGradient>
+                      </defs>
+                      <path fill="url(#instagram-gradient)" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                    </svg>
           </div>
-        </section>
-
-        {/* Platform Selection */}
-        <section className="platform-selection">
-          <h2>{t('platformTitle')}</h2>
-          <div className="platforms-grid">
-            <label className="platform-option">
-              <input
-                type="checkbox"
-                checked={selectedPlatforms.linkedin}
-                onChange={(e) => setSelectedPlatforms(prev => ({
-                  ...prev,
-                  linkedin: e.target.checked
-                }))}
-              />
-              <div className="platform-card">
-                <div className="platform-icon">💼</div>
-                <h3>{t('linkedin')}</h3>
-                <p>{t('linkedinDesc')}</p>
-                <small>{t('linkedinSize')}</small>
-              </div>
-            </label>
-
-            <label className="platform-option">
-              <input
-                type="checkbox"
-                checked={selectedPlatforms.instagram}
-                onChange={(e) => setSelectedPlatforms(prev => ({
-                  ...prev,
-                  instagram: e.target.checked
-                }))}
-              />
-              <div className="platform-card">
-                <div className="platform-icon">📸</div>
-                <h3>{t('instagram')}</h3>
-                <p>{t('instagramDesc')}</p>
-                <small>{t('instagramSize')}</small>
-              </div>
-            </label>
-
-            <label className="platform-option">
-              <input
-                type="checkbox"
-                checked={selectedPlatforms.facebook}
-                onChange={(e) => setSelectedPlatforms(prev => ({
-                  ...prev,
-                  facebook: e.target.checked
-                }))}
-              />
-              <div className="platform-card">
-                <div className="platform-icon">👥</div>
-                <h3>{t('facebook')}</h3>
-                <p>{t('facebookDesc')}</p>
-                <small>{t('facebookSize')}</small>
-              </div>
-            </label>
-          </div>
-        </section>
-
-        {/* Processing Section */}
-        <section className="processing-section">
-          <button 
-            className="process-button"
-            onClick={handleProcessFiles}
-            disabled={(uploadedFiles.length === 0 && textContent.trim() === '') || processingStatus === 'processing'}
-          >
-            {processingStatus === 'processing' ? (
-              <>
-                <div className="spinner"></div>
-                {t('processing')}
-              </>
-            ) : (
-              t('processButton')
-            )}
-          </button>
-        </section>
-
-        {/* Results Section */}
-        {processedContent && (
-          <section className="results-section">
-            <h2>{t('resultsTitle')}</h2>
-            
-            {/* Images */}
-            {processedContent.images.length > 0 && (
-              <div className="content-group">
-                <h3>{t('imagesTitle')}</h3>
-                <div className="platform-results">
-                  {Object.entries(processedContent.platforms)
-                    .filter(([_, selected]) => selected)
-                    .map(([platform, _]) => (
-                      <div key={platform} className="platform-result">
-                        <h4>{platform.charAt(0).toUpperCase() + platform.slice(1)}</h4>
-                        <div className="processed-images">
-                          {processedContent.images.map((file, index) => (
-                            <div key={index} className="processed-item">
-                              <img 
-                                src={file.preview} 
-                                alt={`${platform} version`}
-                                className="processed-image"
-                              />
-                              <div className="image-info">
-                                <span className="dimensions">
-                                  {platform === 'linkedin' ? '1200x627' : 
-                                   platform === 'instagram' ? '1080x1080' : '1200x630'}
-                                </span>
-                                <button 
-                                  className="download-btn"
-                                  onClick={() => handleDownload(platform, 'image')}
-                                >
-                                  Download
-                                </button>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              </div>
-            )}
-
-            {/* Videos */}
-            {processedContent.videos.length > 0 && (
-              <div className="content-group">
-                <h3>Videos</h3>
-                <div className="platform-results">
-                  {Object.entries(processedContent.platforms)
-                    .filter(([_, selected]) => selected)
-                    .map(([platform, _]) => (
-                      <div key={platform} className="platform-result">
-                        <h4>{platform.charAt(0).toUpperCase() + platform.slice(1)}</h4>
-                        <div className="processed-videos">
-                          {processedContent.videos.map((file, index) => (
-                            <div key={index} className="processed-item">
-                              <div className="video-preview-large">
-                                <div className="video-icon">🎥</div>
-                                <span>{file.name}</span>
-                              </div>
-                              <div className="video-info">
-                                <span className="format">MP4</span>
-                                <button 
-                                  className="download-btn"
-                                  onClick={() => handleDownload(platform, 'video')}
-                                >
-                                  Download
-                                </button>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              </div>
-            )}
-
-            {/* Generated Text Content */}
-            {processedContent.textContent && (
-              <div className="content-group">
-                <h3>Generated Text Content</h3>
-                <div className="text-results-section">
-                  {Object.entries(processedContent.platforms)
-                    .filter(([_, selected]) => selected)
-                    .map(([platform, _]) => (
-                      <div key={platform} className="platform-text-content">
-                        <h4>{platform.charAt(0).toUpperCase() + platform.slice(1)} Version</h4>
-                        <div className="text-options">
-                          {[1, 2, 3].map(num => (
-                            <div key={num} className="text-option">
-                              <div className="text-content">
-                                <h5>Version {num}</h5>
-                                <p className="text-version">
-                                  {platform === 'linkedin' 
-                                    ? `Professional LinkedIn post ${num}: Transform your original text into a business-focused, professional format with industry insights and relevant hashtags. Perfect for B2B engagement and thought leadership.`
-                                    : platform === 'instagram'
-                                    ? `Engaging Instagram post ${num}: Convert your text into a visually appealing, story-driven format with emojis, line breaks, and Instagram-specific hashtags. Designed for maximum engagement and visual storytelling.`
-                                    : `Conversational Facebook post ${num}: Adapt your content for Facebook's community-focused environment with conversational tone, questions to encourage interaction, and Facebook-optimized hashtags.`
-                                  }
-                                </p>
-                              </div>
-                              <div className="text-actions">
-                                <button className="copy-btn">Copy</button>
-                                <button className="edit-btn">Edit</button>
-                                <button className="download-btn">Download</button>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              </div>
-            )}
-
-            {/* Generated Captions for Media */}
-            {(processedContent.images.length > 0 || processedContent.videos.length > 0) && (
-            <div className="content-group">
-                <h3>Generated Media Captions</h3>
-              <div className="captions-section">
-                {Object.entries(processedContent.platforms)
-                  .filter(([_, selected]) => selected)
-                  .map(([platform, _]) => (
-                    <div key={platform} className="platform-captions">
-                      <h4>{platform.charAt(0).toUpperCase() + platform.slice(1)} Captions</h4>
-                      <div className="caption-options">
-                        {[1, 2, 3].map(num => (
-                          <div key={num} className="caption-option">
-                            <p className="caption-text">
-                              {platform === 'linkedin' 
-                                ? `Professional caption ${num} for LinkedIn with relevant hashtags and business focus.`
-                                : platform === 'instagram'
-                                ? `Engaging Instagram caption ${num} with emojis and visual storytelling elements.`
-                                : `Conversational Facebook caption ${num} for community engagement and social interaction.`
+                  <span>Instagram</span>
+                  
+                  {/* Instagram Layout Options */}
+                  {selectedPlatform === 'instagram' && (
+                    <div className="platform-layout-options">
+                      <h5>{t('layoutOptions')}</h5>
+                      <div className="layout-options">
+                        {[t('square'), t('portrait')].map(layout => (
+                          <div
+                            key={layout}
+                            className={`layout-option ${selectedLayout === layout ? 'selected' : ''}`}
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent event from bubbling to parent
+                              if (selectedLayout === layout) {
+                                setSelectedLayout(''); // Unselect if clicking the same option
+                              } else {
+                                setSelectedLayout(layout); // Select the new option
                               }
-                            </p>
-                            <div className="caption-actions">
-                              <button className="copy-btn">Copy</button>
-                              <button className="edit-btn">Edit</button>
+                            }}
+                            title={layout}
+                          >
+                            <div className="layout-icon">
+                              {layout === t('square') && (
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                </svg>
+                              )}
+                              {layout === t('portrait') && (
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                  <rect x="5" y="3" width="14" height="18" rx="2" ry="2"/>
+                                </svg>
+                              )}
+                              {layout === t('landscape') && (
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                  <rect x="3" y="5" width="18" height="14" rx="2" ry="2"/>
+                                </svg>
+                              )}
                             </div>
+                            <span>{layout}</span>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
+                </div>
+                
+                <div
+                  className={`platform-option ${selectedPlatform === 'facebook' ? 'selected' : ''}`}
+                  onClick={() => handlePlatformChange('facebook')}
+                  title="Facebook"
+                >
+                  <div className="platform-icon facebook-icon">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                              </div>
+                  <span>Facebook</span>
+                  
+                  {/* Facebook Layout Options */}
+                  {selectedPlatform === 'facebook' && (
+                    <div className="platform-layout-options">
+                      <h5>{t('layoutOptions')}</h5>
+                      <div className="layout-options">
+                        {[t('square'), t('landscape')].map(layout => (
+                          <div
+                            key={layout}
+                            className={`layout-option ${selectedLayout === layout ? 'selected' : ''}`}
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent event from bubbling to parent
+                              if (selectedLayout === layout) {
+                                setSelectedLayout(''); // Unselect if clicking the same option
+                              } else {
+                                setSelectedLayout(layout); // Select the new option
+                              }
+                            }}
+                            title={layout}
+                          >
+                            <div className="layout-icon">
+                              {layout === t('square') && (
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                </svg>
+                              )}
+                              {layout === t('portrait') && (
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                  <rect x="5" y="3" width="14" height="18" rx="2" ry="2"/>
+                                </svg>
+                              )}
+                              {layout === t('landscape') && (
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                  <rect x="3" y="5" width="18" height="14" rx="2" ry="2"/>
+                                </svg>
+                              )}
+                            </div>
+                            <span>{layout}</span>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
+                </div>
+                
+                <div
+                  className={`platform-option ${selectedPlatform === 'linkedin' ? 'selected' : ''}`}
+                  onClick={() => handlePlatformChange('linkedin')}
+                  title="LinkedIn"
+                >
+                  <div className="platform-icon linkedin-icon">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path fill="#0A66C2" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    </svg>
+              </div>
+                  <span>LinkedIn</span>
+                  
+                  {/* LinkedIn Layout Options */}
+                  {selectedPlatform === 'linkedin' && (
+                    <div className="platform-layout-options">
+                      <h5>{t('layoutOptions')}</h5>
+                      <div className="layout-options">
+                        {[t('landscape')].map(layout => (
+                          <div
+                            key={layout}
+                            className={`layout-option ${selectedLayout === layout ? 'selected' : ''}`}
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent event from bubbling to parent
+                              if (selectedLayout === layout) {
+                                setSelectedLayout(''); // Unselect if clicking the same option
+                              } else {
+                                setSelectedLayout(layout); // Select the new option
+                              }
+                            }}
+                            title={layout}
+                          >
+                            <div className="layout-icon">
+                              {layout === t('square') && (
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                </svg>
+                              )}
+                              {layout === t('portrait') && (
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                  <rect x="5" y="3" width="14" height="18" rx="2" ry="2"/>
+                                </svg>
+                              )}
+                              {layout === t('landscape') && (
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                  <rect x="3" y="5" width="18" height="14" rx="2" ry="2"/>
+                                </svg>
+                              )}
+                            </div>
+                            <span>{layout}</span>
                           </div>
                         ))}
                       </div>
                     </div>
-                  ))}
+                  )}
+                </div>
+              </div>
+              
+              {/* Content Type Selection */}
+              {selectedPlatform && (
+                <div className="content-type-section">
+                  <h4>{t('contentType')}</h4>
+                  <div className="content-type-options">
+                    <div
+                      className={`content-type-option ${contentType === 'post' ? 'selected' : ''}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleContentTypeChange('post');
+                      }}
+                      title="Post"
+                    >
+                      <div className="content-type-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                        </svg>
+                      </div>
+                      <span>{t('post')}</span>
+                    </div>
+                    {selectedPlatform !== 'linkedin' && (
+                      <div
+                        className={`content-type-option ${contentType === 'story' ? 'selected' : ''}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleContentTypeChange('story');
+                        }}
+                        title="Story"
+                      >
+                        <div className="content-type-icon">
+                          <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                          </svg>
+                        </div>
+                        <span>{t('story')}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Output Type Container */}
+            <div className="input-container">
+              <h3>{t('outputType')}</h3>
+              <div className="output-type-options">
+                <div
+                  className={`output-type-option ${outputType === 'static' ? 'selected' : ''}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (outputType === 'static') {
+                      setOutputType(''); // Unselect if clicking the same option
+                    } else {
+                      setOutputType('static'); // Select the new option
+                    }
+                  }}
+                  title="Static Output"
+                >
+                  <div className="output-type-icon">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14zm-10-7v6l5-3z"/>
+                    </svg>
+                  </div>
+                  <span>{t('staticOutput')}</span>
+                </div>
+                <div
+                  className={`output-type-option ${outputType === 'animated' ? 'selected' : ''}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (outputType === 'animated') {
+                      setOutputType(''); // Unselect if clicking the same option
+                    } else {
+                      setOutputType('animated'); // Select the new option
+                    }
+                  }}
+                  title="Animated Output"
+                >
+                  <div className="output-type-icon">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                  </div>
+                  <span>{t('animatedOutput')}</span>
+                </div>
               </div>
             </div>
-            )}
 
-            {/* Download All */}
-            <div className="download-all-section">
-              <button className="download-all-btn">
-                📦 Download All Content
+            {/* Newspaper Container */}
+            <div className="input-container">
+              <h3>{t('newspaper')}</h3>
+              <div className="newspaper-options">
+                <div
+                  className={`newspaper-option kaleva ${selectedNewspaper === 'Kaleva' ? 'selected' : ''}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (selectedNewspaper === 'Kaleva') {
+                      setSelectedNewspaper('');
+                    } else {
+                      setSelectedNewspaper('Kaleva');
+                    }
+                  }}
+                  title="Kaleva"
+                >
+                  <div className="newspaper-logo">
+                    <img src={kalevaLogo} alt="Kaleva" />
+                  </div>
+                </div>
+                
+                <div
+                  className={`newspaper-option lapin-kansa ${selectedNewspaper === 'Lapin Kansa' ? 'selected' : ''}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (selectedNewspaper === 'Lapin Kansa') {
+                      setSelectedNewspaper('');
+                    } else {
+                      setSelectedNewspaper('Lapin Kansa');
+                    }
+                  }}
+                  title="Lapin Kansa"
+                >
+                  <div className="newspaper-logo">
+                    <img src={lapinKansaLogo} alt="Lapin Kansa" />
+                  </div>
+                </div>
+                
+                <div
+                  className={`newspaper-option ilkka-pohjalainen ${selectedNewspaper === 'Ilkka-Pohjalainen' ? 'selected' : ''}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (selectedNewspaper === 'Ilkka-Pohjalainen') {
+                      setSelectedNewspaper('');
+                    } else {
+                      setSelectedNewspaper('Ilkka-Pohjalainen');
+                    }
+                  }}
+                  title="Ilkka-Pohjalainen"
+                >
+                  <div className="newspaper-logo">
+                    <img src={ilkkaPohjalainenLogo} alt="Ilkka-Pohjalainen" />
+                  </div>
+                </div>
+                
+                <div
+                  className={`newspaper-option koillissanomat ${selectedNewspaper === 'Koillissanomat' ? 'selected' : ''}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (selectedNewspaper === 'Koillissanomat') {
+                      setSelectedNewspaper('');
+                    } else {
+                      setSelectedNewspaper('Koillissanomat');
+                    }
+                  }}
+                  title="Koillissanomat"
+                >
+                  <div className="newspaper-logo">
+                    <img src={koillissanomatLogo} alt="Koillissanomat" />
+                  </div>
+                </div>
+                
+                <div
+                  className={`newspaper-option rantalakeus ${selectedNewspaper === 'Rantalakeus' ? 'selected' : ''}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (selectedNewspaper === 'Rantalakeus') {
+                      setSelectedNewspaper('');
+                    } else {
+                      setSelectedNewspaper('Rantalakeus');
+                    }
+                  }}
+                  title="Rantalakeus"
+                >
+                  <div className="newspaper-logo">
+                    <img src={rantalakeusLogo} alt="Rantalakeus" />
+                  </div>
+                </div>
+                
+                <div
+                  className={`newspaper-option iijokiseutu ${selectedNewspaper === 'Iijokiseutu' ? 'selected' : ''}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (selectedNewspaper === 'Iijokiseutu') {
+                      setSelectedNewspaper('');
+                    } else {
+                      setSelectedNewspaper('Iijokiseutu');
+                    }
+                  }}
+                  title="Iijokiseutu"
+                >
+                  <div className="newspaper-logo">
+                    <img src={iijokiseutuLogo} alt="Iijokiseutu" />
+                  </div>
+                </div>
+                
+                <div
+                  className={`newspaper-option raahen-seutu ${selectedNewspaper === 'Raahen Seutu' ? 'selected' : ''}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (selectedNewspaper === 'Raahen Seutu') {
+                      setSelectedNewspaper('');
+                    } else {
+                      setSelectedNewspaper('Raahen Seutu');
+                    }
+                  }}
+                  title="Raahen Seutu"
+                >
+                  <div className="newspaper-logo">
+                    <img src={raahenSeutuLogo} alt="Raahen Seutu" />
+                  </div>
+                </div>
+                
+                <div
+                  className={`newspaper-option pyhajokiseutu ${selectedNewspaper === 'Pyhäjokiseutu' ? 'selected' : ''}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (selectedNewspaper === 'Pyhäjokiseutu') {
+                      setSelectedNewspaper('');
+                    } else {
+                      setSelectedNewspaper('Pyhäjokiseutu');
+                    }
+                  }}
+                  title="Pyhäjokiseutu"
+                >
+                  <div className="newspaper-logo">
+                    <img src={pyhajokiseutuLogo} alt="Pyhäjokiseutu" />
+                  </div>
+                </div>
+                
+                <div
+                  className={`newspaper-option siikajokilaakso ${selectedNewspaper === 'Siikajokilaakso' ? 'selected' : ''}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (selectedNewspaper === 'Siikajokilaakso') {
+                      setSelectedNewspaper('');
+                    } else {
+                      setSelectedNewspaper('Siikajokilaakso');
+                    }
+                  }}
+                  title="Siikajokilaakso"
+                >
+                  <div className="newspaper-logo">
+                    <img src={siikajokilaaksoLogo} alt="Siikajokilaakso" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Process Button */}
+            <div className="process-container">
+              <button 
+                className="process-button"
+                onClick={handleProcessFiles}
+                disabled={
+                  !selectedPlatform || 
+                  !contentType || 
+                  !selectedLayout || 
+                  !outputType || 
+                  !selectedNewspaper ||
+                  (uploadedFiles.length === 0 && textContent.trim() === '') ||
+                  processingStatus === 'processing'
+                }
+              >
+                {processingStatus === 'processing' ? (
+                  <>
+                    <div className="spinner"></div>
+                    {t('processing')}
+                  </>
+                ) : (
+                  t('generateContent')
+                )}
               </button>
             </div>
-          </section>
-        )}
+          </div>
+
+          {/* RIGHT SIDE - OUTPUTS */}
+          <div className="output-panel">
+            <h2>{t('generatedOutput')}</h2>
+            
+            {processedContent ? (
+              <div className="output-content">
+                {/* Text Output Container */}
+                <div className="input-container">
+                  <h3>{t('textOutput')}</h3>
+                  <div className="description-output">
+                    <p>
+                      {processedContent.description || t('noDescription')}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Graphic Output Container */}
+                <div className="input-container">
+                  <h3>{t('graphicOutput')}</h3>
+                  <div className="graphic-output">
+                    {processedContent.outputType === 'static' ? (
+                      <div className="static-graphic-preview">
+                        <div className="graphic-placeholder">
+                          <div className="graphic-icon">🖼️</div>
+                          <p>Static Branded Graphic</p>
+                          <small>
+                            {processedContent.platform} {processedContent.contentType} - {processedContent.layout}
+                          </small>
+                          <button className="download-btn" onClick={handleDownload}>
+                            Download Graphic
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="animated-graphic-preview">
+                        <div className="graphic-placeholder">
+                          <div className="graphic-icon">🎬</div>
+                          <p>Animated Branded Graphic</p>
+                          <small>
+                            {processedContent.platform} {processedContent.contentType} - {processedContent.layout}
+                          </small>
+                          <button className="download-btn" onClick={handleDownload}>
+                            Download Video
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="no-output">
+                <div className="no-output-icon">📝</div>
+                <p>{t('configureInputs')}</p>
+            </div>
+            )}
+          </div>
+            </div>
       </main>
 
       <footer className="app-footer">

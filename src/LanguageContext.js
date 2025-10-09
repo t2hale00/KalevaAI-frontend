@@ -92,7 +92,31 @@ const translations = {
     // Language Switcher
     language: 'Language',
     english: 'English',
-    finnish: 'Suomi'
+    finnish: 'Suomi',
+    
+    // New UI Elements
+    inputConfiguration: 'Input Configuration',
+    contentInput: 'Content Input',
+    generatedOutput: 'Generated Output',
+    uploadImage: 'Upload Image',
+    textContent: 'Text Content',
+    socialMediaPlatform: 'Social Media Platform',
+    outputType: 'Output Type',
+    newspaper: 'Newspaper',
+    contentType: 'Content Type',
+    layoutOptions: 'Layout Options',
+    post: 'Post',
+    story: 'Story',
+    square: 'Square',
+    portrait: 'Portrait',
+    landscape: 'Landscape',
+    staticOutput: 'Static Output',
+    animatedOutput: 'Animated Output',
+    generateContent: 'Generate Content',
+    textOutput: 'Text Output',
+    graphicOutput: 'Graphic Output',
+    configureInputs: 'Configure your inputs and click "Generate Content" to see results here',
+    noDescription: 'No description generated'
   },
   
   fi: {
@@ -176,7 +200,31 @@ const translations = {
     // Language Switcher
     language: 'Kieli',
     english: 'English',
-    finnish: 'Suomi'
+    finnish: 'Suomi',
+    
+    // New UI Elements
+    inputConfiguration: 'Syöttökonfiguraatio',
+    contentInput: 'Sisältösyöttö',
+    generatedOutput: 'Luotu Tuotos',
+    uploadImage: 'Lataa Kuva',
+    textContent: 'Tekstisisältö',
+    socialMediaPlatform: 'Sosiaalisen Median Alusta',
+    outputType: 'Tulostyyppi',
+    newspaper: 'Sanomalehti',
+    contentType: 'Sisältötyyppi',
+    layoutOptions: 'Asetteluvaihtoehdot',
+    post: 'Julkaisu',
+    story: 'Tarina',
+    square: 'Neliö',
+    portrait: 'Pysty',
+    landscape: 'Vaaka',
+    staticOutput: 'Staattinen Tuotos',
+    animatedOutput: 'Animoitu Tuotos',
+    generateContent: 'Luo Sisältö',
+    textOutput: 'Tekstituotos',
+    graphicOutput: 'Graafinen Tuotos',
+    configureInputs: 'Määritä syötteesi ja klikkaa "Luo Sisältö" nähdäksesi tulokset täällä',
+    noDescription: 'Kuvailua ei luotu'
   }
 };
 
@@ -197,3 +245,4 @@ export const LanguageProvider = ({ children }) => {
     </LanguageContext.Provider>
   );
 };
+

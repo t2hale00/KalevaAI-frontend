@@ -20,22 +20,25 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background: #f8fafc;
+  color: #1e293b;
 }
 
 /* Header */
 .app-header {
-  background: linear-gradient(135deg, #B09050 0%, #E0D0A0 100%);
-  color: white;
-  padding: 2rem 1rem;
-  box-shadow: 0 4px 6px -1px rgba(176, 144, 80, 0.3);
+  background: #D4C4A8; /* Kaleva Media beige */
+  color: #2D3748;
+  padding: 1.5rem 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(212, 196, 168, 0.3);
 }
 
 .header-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1200px;
+  max-width: 1600px;
   margin: 0 auto;
+  padding: 0 0.5rem;
 }
 
 .header-text {
@@ -101,13 +104,177 @@ body {
 /* Main content */
 .app-main {
   flex: 1;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1rem;
+  padding: 0.5rem;
   width: 100%;
+  height: calc(100vh - 120px);
 }
 
-/* Sections */
+/* Split Container */
+.split-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  height: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 0.5rem;
+}
+
+/* Input Panel */
+.input-panel {
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  overflow-y: auto;
+}
+
+.input-panel h2 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #1e293b;
+  text-align: center;
+  background: linear-gradient(135deg, #8B6F47 0%, #B09050 100%); /* Darker gradient */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Output Panel */
+.output-panel {
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  overflow-y: auto;
+  /* Hide scrollbar but keep scrolling functionality */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.output-panel::-webkit-scrollbar {
+  display: none;
+}
+
+.output-panel h2 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #1e293b;
+  text-align: center;
+  background: linear-gradient(135deg, #4A6B82 0%, #3a5568 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Input Containers */
+.input-container {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #D4C4A8; /* Kaleva Media beige */
+}
+
+.input-container h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #D4C4A8; /* Kaleva Media beige */
+  text-align: center;
+}
+
+/* Content Input Grid */
+.content-input-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* Input Sections */
+.input-section {
+  background: white;
+  border-radius: 6px;
+  padding: 0.75rem;
+  border: 1px solid #D4C4A8; /* Kaleva Media beige */
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-section h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #D4C4A8; /* Kaleva Media beige */
+}
+
+.input-section h5 {
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  color: #D4C4A8; /* Kaleva Media beige */
+}
+
+/* Platform Layout Options */
+.platform-layout-options {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.platform-layout-options h5 {
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #64748b;
+  text-align: center;
+}
+
+/* Content Type Section */
+.content-type-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.content-type-section h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #374151;
+  text-align: center;
+}
+
+/* Process Container */
+.process-container {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 2px solid #e2e8f0;
+}
+
+/* Output Sections */
+.output-section {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+.output-section h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #1e293b;
+}
+
+/* Sections (legacy) */
 section {
   background: white;
   border-radius: 8px;
@@ -138,11 +305,314 @@ section h4 {
   color: #4b5563;
 }
 
-/* Input Section - Side by Side Layout */
-.input-section {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+/* Option Styles */
+.platform-options, .content-type-options, .layout-options, .output-type-options {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
+.platform-option, .content-type-option, .layout-option, .output-type-option {
+  padding: 0.75rem;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1;
+  min-width: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  border: 2px solid transparent;
+}
+
+.platform-icon, .content-type-icon, .layout-icon, .output-type-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.platform-icon svg, .content-type-icon svg, .layout-icon svg, .output-type-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.platform-option span, .content-type-option span, .layout-option span, .output-type-option span {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+/* Ensure layout option text is always visible */
+.layout-option span {
+  color: #374151 !important;
+}
+
+.platform-option:hover, .content-type-option:hover, .layout-option:hover, .output-type-option:hover {
+  background: #f8fafc;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.platform-option.selected, .content-type-option.selected, .layout-option.selected, .output-type-option.selected {
+  background: #D4C4A8; /* Kaleva Media beige */
+  border-color: #D4C4A8;
+  box-shadow: 0 4px 8px rgba(212, 196, 168, 0.3);
+}
+
+.platform-option.selected span, .content-type-option.selected span, .output-type-option.selected span {
+  color: #2D3748; /* Dark text for better contrast with beige */
+}
+
+/* Layout option selected state - different color for better visibility */
+.layout-option.selected {
+  background: #B09050; /* Darker gold for better visibility */
+  border-color: #B09050;
+  box-shadow: 0 4px 8px rgba(176, 144, 80, 0.3);
+}
+
+/* Keep layout option text dark even when selected */
+.layout-option.selected span {
+  color: white !important; /* White text for better contrast with gold */
+  font-weight: 600;
+}
+
+/* Brand-specific icon colors */
+.instagram-icon svg path {
+  fill: url(#instagram-gradient);
+}
+
+.facebook-icon svg path {
+  fill: #1877F2;
+}
+
+.linkedin-icon svg path {
+  fill: #0A66C2;
+}
+
+/* Override selected state for brand colors */
+.platform-option.selected .instagram-icon svg path {
+  fill: url(#instagram-gradient);
+}
+
+.platform-option.selected .facebook-icon svg path {
+  fill: #1877F2;
+}
+
+.platform-option.selected .linkedin-icon svg path {
+  fill: #0A66C2;
+}
+
+/* Newspaper Options Styling */
+.newspaper-options {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.newspaper-option {
+  padding: 0.75rem;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1;
+  min-width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  border: 2px solid transparent;
+}
+
+/* Individual newspaper brand backgrounds */
+.newspaper-option.kaleva {
+  background: #FF8C30;
+}
+
+.newspaper-option.lapin-kansa {
+  background: #0075bf;
+}
+
+.newspaper-option.ilkka-pohjalainen {
+  background: #54c1ef;
+}
+
+.newspaper-option.koillissanomat {
+  background: #76bd22;
+}
+
+.newspaper-option.rantalakeus {
+  background: #de3414;
+}
+
+.newspaper-option.iijokiseutu {
+  background: #0073bb;
+}
+
+.newspaper-option.raahen-seutu {
+  background: #76bd22;
+}
+
+.newspaper-option.pyhajokiseutu {
+  background: #009ac1;
+}
+
+.newspaper-option.siikajokilaakso {
+  background: #0073bb;
+}
+
+.newspaper-logo {
+  font-weight: bold;
+  text-align: center;
+  line-height: 1.2;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.newspaper-logo img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: brightness(0) invert(1); /* Make logos white */
+  transition: filter 0.3s ease;
+}
+
+/* Newspaper option span styles removed - no longer using text labels */
+
+.newspaper-option:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  opacity: 0.9;
+}
+
+.newspaper-option.selected {
+  border: 3px solid #D4C4A8; /* Kaleva Media beige */
+  box-shadow: 0 4px 12px rgba(212, 196, 168, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Selected span styles removed - no longer using text labels */
+
+/* Newspaper brand colors removed - now using actual logo images */
+
+/* Selected state for newspaper logos */
+.newspaper-option.selected .newspaper-logo img {
+  filter: brightness(0) invert(1); /* Keep logos white when selected */
+}
+
+/* Select Styles */
+.newspaper-select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  background: white;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.newspaper-select:focus {
+  outline: none;
+  border-color: #B09050;
+  box-shadow: 0 0 0 3px rgba(176, 144, 80, 0.1);
+}
+
+.newspaper-select option {
+  padding: 0.5rem;
+}
+
+/* Output Styles */
+.description-output {
+  background: white;
+  border: 1px solid #D4C4A8; /* Kaleva Media beige */
+  border-radius: 6px;
+  padding: 0.75rem;
+  min-height: 80px;
+}
+
+.description-output p {
+  margin: 0;
+  line-height: 1.5;
+  color: #374151;
+  font-size: 0.9rem;
+}
+
+.graphic-output {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.graphic-placeholder, .static-graphic-preview, .animated-graphic-preview {
+  background: white;
+  border: 2px dashed #D4C4A8; /* Kaleva Media beige */
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+  width: 100%;
+  max-width: 350px;
+  transition: all 0.3s ease;
+}
+
+.graphic-placeholder:hover, .static-graphic-preview:hover, .animated-graphic-preview:hover {
+  border-color: #B09050;
+  background: #faf8f3;
+}
+
+.graphic-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+  opacity: 0.7;
+}
+
+.graphic-placeholder p {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.4rem;
+}
+
+.graphic-placeholder small {
+  color: #64748b;
+  font-size: 0.85rem;
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.no-output {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  color: #64748b;
+}
+
+.no-output-icon {
+  font-size: 3rem;
+  margin-bottom: 0.75rem;
+  opacity: 0.5;
+}
+
+.no-output p {
+  font-size: 1rem;
+  margin: 0;
+  max-width: 280px;
+  line-height: 1.4;
+}
+
+/* Input Section - Side by Side Layout (legacy) */
 .input-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -168,16 +638,18 @@ section h4 {
 
 .text-input {
   width: 100%;
-  padding: 0.75rem;
-  border: 2px solid #e2e8f0;
-  border-radius: 8px;
-  font-size: 0.95rem;
+  padding: 0.5rem;
+  border: 2px solid #D4C4A8; /* Kaleva Media beige */
+  border-radius: 6px;
+  font-size: 0.9rem;
   font-family: inherit;
-  line-height: 1.5;
+  line-height: 1.4;
   resize: vertical;
   min-height: 80px;
   transition: all 0.3s ease;
   background: white;
+  color: #1e293b;
+  flex: 1;
 }
 
 .text-input:focus {
@@ -206,13 +678,17 @@ section h4 {
 }
 
 .dropzone {
-  border: 2px dashed #cbd5e1;
-  border-radius: 8px;
-  padding: 1.5rem 1rem;
+  border: 2px dashed #D4C4A8; /* Kaleva Media beige */
+  border-radius: 6px;
+  padding: 0.75rem;
   text-align: center;
   cursor: pointer;
   transition: all 0.3s ease;
   background-color: #f8fafc;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .dropzone:hover {
@@ -229,47 +705,47 @@ section h4 {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
 }
 
 .upload-icon {
-  font-size: 2rem;
+  font-size: 1.5rem;
   opacity: 0.6;
 }
 
 .dropzone p {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: #64748b;
   margin: 0;
 }
 
 .dropzone small {
   color: #94a3b8;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 /* Uploaded Files */
 .uploaded-files {
-  margin-top: 1rem;
+  margin-top: 0.75rem;
 }
 
 .files-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 0.75rem;
-  margin-top: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 .file-item {
   position: relative;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: 6px;
   overflow: hidden;
   background: white;
 }
 
 .file-preview {
-  height: 80px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -295,36 +771,37 @@ section h4 {
 }
 
 .file-info {
-  padding: 0.5rem;
+  padding: 0.4rem;
 }
 
 .file-name {
   display: block;
   font-weight: 500;
   color: #1e293b;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.2rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 0.85rem;
 }
 
 .file-size {
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   color: #64748b;
 }
 
 .remove-file {
   position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
+  top: 0.4rem;
+  right: 0.4rem;
   background: #ef4444;
   color: white;
   border: none;
   border-radius: 50%;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   cursor: pointer;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -405,15 +882,17 @@ section h4 {
   background: linear-gradient(135deg, #B09050 0%, #E0D0A0 100%);
   color: white;
   border: none;
-  border-radius: 8px;
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
+  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
+  width: 100%;
+  justify-content: center;
 }
 
 .process-button:hover:not(:disabled) {
@@ -427,8 +906,8 @@ section h4 {
 }
 
 .spinner {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   border: 2px solid transparent;
   border-top: 2px solid white;
   border-radius: 50%;
@@ -481,7 +960,7 @@ section h4 {
   background: white;
   border-radius: 8px;
   padding: 1rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #D4C4A8; /* Kaleva Media beige */
 }
 
 .processed-images {
@@ -718,8 +1197,8 @@ section h4 {
 
 /* Footer */
 .app-footer {
-  background: #B09050;
-  color: white;
+  background: #D4C4A8; /* Kaleva Media beige */
+  color: #2D3748;
   text-align: center;
   padding: 1.5rem;
   margin-top: auto;
@@ -730,6 +1209,43 @@ section h4 {
 }
 
 /* Responsive Design */
+@media (min-width: 1600px) {
+  .split-container {
+    max-width: 95vw;
+    padding: 0 1rem;
+  }
+  
+  .header-content {
+    max-width: 95vw;
+    padding: 0 1rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .split-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    height: auto;
+    max-width: 100%;
+    padding: 0 0.25rem;
+  }
+  
+  .app-main {
+    height: auto;
+    padding: 0.25rem;
+  }
+  
+  .input-panel, .output-panel {
+    height: auto;
+    min-height: 350px;
+  }
+  
+  .content-input-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}
+
 @media (max-width: 768px) {
   .header-content {
     flex-direction: column;
@@ -746,8 +1262,67 @@ section h4 {
   }
   
   .app-main {
+    padding: 0.25rem;
+  }
+  
+  .input-panel, .output-panel {
     padding: 0.75rem;
   }
+  
+  .input-container {
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  
+  .content-input-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .platform-options, .content-type-options, .layout-options, .output-type-options {
+    flex-direction: column;
+  }
+  
+  .platform-option, .content-type-option, .layout-option, .output-type-option {
+    min-width: auto;
+    padding: 0.6rem 0.5rem;
+    gap: 0.4rem;
+  }
+  
+  .platform-icon, .content-type-icon, .layout-icon, .output-type-icon {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .platform-option span, .content-type-option span, .layout-option span, .output-type-option span {
+    font-size: 0.75rem;
+  }
+  
+  /* Ensure layout option text is visible on mobile */
+  .layout-option span {
+    color: #374151 !important;
+  }
+  
+  .layout-option.selected span {
+    color: white !important; /* White text for better contrast with gold */
+    font-weight: 600;
+  }
+  
+  /* Newspaper options responsive */
+  .newspaper-options {
+    gap: 0.4rem;
+  }
+  
+  .newspaper-option {
+    min-width: 100px;
+    padding: 0.5rem;
+  }
+  
+  .newspaper-logo {
+    height: 32px;
+  }
+  
+  /* Newspaper option span styles removed - no longer using text labels */
   
   section {
     padding: 1rem;
@@ -786,11 +1361,23 @@ section h4 {
   .content-group:nth-child(even) {
     align-items: stretch;
   }
+  
+  .graphic-output {
+    min-height: 180px;
+  }
+  
+  .graphic-placeholder, .static-graphic-preview, .animated-graphic-preview {
+    padding: 1rem;
+  }
 }
 
 @media (max-width: 480px) {
   .app-header {
-    padding: 1.5rem 1rem;
+    padding: 1rem 0.25rem;
+  }
+  
+  .header-content {
+    padding: 0 0.25rem;
   }
   
   .header-text h1 {
@@ -807,10 +1394,23 @@ section h4 {
   }
   
   .dropzone {
-    padding: 1.25rem 0.75rem;
+    padding: 0.75rem;
+    min-height: 100px;
+  }
+  
+  .input-section {
+    min-height: 100px;
+  }
+  
+  .text-input {
+    min-height: 70px;
   }
   
   .platform-card {
     padding: 0.75rem;
+  }
+  
+  .split-container {
+    padding: 0 0.1rem;
   }
 }
