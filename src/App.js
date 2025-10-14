@@ -1,6 +1,7 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { LanguageProvider, useLanguage } from './LanguageContext';
+import { generateContent, getDownloadUrl, checkHealth } from './services/api';
 import './App.css';
 
 // Import newspaper logos
@@ -49,6 +50,11 @@ function AppContent() {
   const [selectedNewspaper, setSelectedNewspaper] = useState('');
   const [processingStatus, setProcessingStatus] = useState('idle');
   const [processedContent, setProcessedContent] = useState(null);
+  const [error, setError] = useState(null);
+  const [backendStatus, setBackendStatus] = useState('checking');
+  const [addBanner, setAddBanner] = useState(false);
+  const [bannerName, setBannerName] = useState('');
+  const [selectedTextLength, setSelectedTextLength] = useState('medium'); // 'short', 'medium', 'long'
 
   // Layout options based on platform and content type
   const getLayoutOptions = () => {
@@ -85,6 +91,20 @@ function AppContent() {
     'Siikajokilaakso'
   ];
 
+  // Check backend health on mount
+  useEffect(() => {
+    const checkBackendHealth = async () => {
+      try {
+        await checkHealth();
+        setBackendStatus('connected');
+      } catch (error) {
+        console.error('Backend connection failed:', error);
+        setBackendStatus('disconnected');
+      }
+    };
+    checkBackendHealth();
+  }, []);
+
   const onDrop = useCallback((acceptedFiles) => {
     const newFiles = acceptedFiles.map(file => ({
       id: Date.now() + Math.random(),
@@ -108,26 +128,89 @@ function AppContent() {
 
   const handleProcessFiles = async () => {
     setProcessingStatus('processing');
+    setError(null);
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // Prepare form data
+      const formData = new FormData();
+      
+      // Map frontend values to backend expected format
+      const layoutMap = {
+        [t('square')]: 'square',
+        [t('portrait')]: 'portrait',
+        [t('landscape')]: 'landscape',
+        'Square': 'square',
+        'Portrait': 'portrait',
+        'Landscape': 'landscape'
+      };
+      
+      formData.append('platform', selectedPlatform);
+      formData.append('content_type', contentType);
+      formData.append('layout', layoutMap[selectedLayout] || selectedLayout.toLowerCase());
+      formData.append('output_type', outputType);
+      formData.append('newspaper', selectedNewspaper);
+      
+      if (textContent) {
+        formData.append('text_content', textContent);
+      }
+      
+      formData.append('text_length', selectedTextLength);
+      
+      // Add banner options
+      formData.append('add_banner', addBanner.toString());
+      if (addBanner && bannerName.trim()) {
+        formData.append('banner_name', bannerName.trim());
+      }
+      
+      // Add image if uploaded
+      if (uploadedFiles.length > 0) {
+        // Use the first uploaded file
+        formData.append('image', uploadedFiles[0].file);
+      }
+      
+      // Call backend API
+      const response = await generateContent(formData);
+      
+      // Update processed content with backend response
       setProcessedContent({
-        description: textContent,
+        taskId: response.task_id,
+        heading: response.generated_text.heading,
+        description: response.generated_text.description,
+        graphicUrl: response.graphic_url,
+        graphicUrls: response.graphic_urls || [response.graphic_url].filter(Boolean),
+        fileFormat: response.file_format,
+        dimensions: response.dimensions,
         platform: selectedPlatform,
         contentType: contentType,
         layout: selectedLayout,
         outputType: outputType,
         newspaper: selectedNewspaper,
-        images: uploadedFiles.filter(f => f.type.startsWith('image/')),
-        videos: uploadedFiles.filter(f => f.type.startsWith('video/'))
+        message: response.message
       });
+      
       setProcessingStatus('completed');
-    }, 3000);
+    } catch (error) {
+      console.error('Error generating content:', error);
+      setError(error.message || 'Failed to generate content. Please try again.');
+      setProcessingStatus('error');
+    }
   };
 
-  const handleDownload = () => {
-    // Simulate download functionality
-    console.log('Downloading branded graphic');
+  const handleDownload = (graphicUrl = null) => {
+    const urlToDownload = graphicUrl || (processedContent && processedContent.graphicUrl);
+    if (urlToDownload) {
+      // Extract filename from URL
+      const filename = urlToDownload.split('/').pop();
+      const downloadUrl = getDownloadUrl(filename);
+      
+      // Create temporary link and trigger download
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = `${processedContent.newspaper}_${processedContent.platform}_${processedContent.contentType}.${processedContent.fileFormat.toLowerCase()}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
 
   // Reset dependent selections when platform changes
@@ -158,6 +241,11 @@ function AppContent() {
       setContentType(type); // Select the new content type
       // Don't reset layout - let user keep their selection
     }
+  };
+
+  // Handle text length changes
+  const handleTextLengthChange = (length) => {
+    setSelectedTextLength(length);
   };
 
   return (
@@ -309,11 +397,50 @@ function AppContent() {
                               )}
                             </div>
                             <span>{layout}</span>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                </div>
-              </div>
-            )}
+                      
+                      {/* Text Length Options */}
+                      <h5>{t('textLength')}</h5>
+                      <div className="text-length-options">
+                        {[
+                          { value: 'short', label: t('short') },
+                          { value: 'medium', label: t('medium') },
+                          { value: 'long', label: t('long') }
+                        ].map(length => (
+                          <div
+                            key={length.value}
+                            className={`text-length-option ${selectedTextLength === length.value ? 'selected' : ''}`}
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent event from bubbling to parent
+                              handleTextLengthChange(length.value);
+                            }}
+                            title={length.label}
+                          >
+                            <div className="text-length-icon">
+                              {length.value === 'short' && (
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                  <path d="M3 7h18v2H3V7zm0 4h18v2H3v-2zm0 4h18v2H3v-2z"/>
+                                </svg>
+                              )}
+                              {length.value === 'medium' && (
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                  <path d="M3 7h18v2H3V7zm0 4h12v2H3v-2zm0 4h8v2H3v-2z"/>
+                                </svg>
+                              )}
+                              {length.value === 'long' && (
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                  <path d="M3 7h18v2H3V7zm0 4h18v2H3v-2zm0 4h18v2H3v-2zm0 4h18v2H3v-2z"/>
+                                </svg>
+                              )}
+                            </div>
+                            <span>{length.label}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
                 
                 <div
@@ -365,11 +492,50 @@ function AppContent() {
                               )}
                             </div>
                             <span>{layout}</span>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                </div>
-              </div>
-            )}
+                      
+                      {/* Text Length Options */}
+                      <h5>{t('textLength')}</h5>
+                      <div className="text-length-options">
+                        {[
+                          { value: 'short', label: t('short') },
+                          { value: 'medium', label: t('medium') },
+                          { value: 'long', label: t('long') }
+                        ].map(length => (
+                          <div
+                            key={length.value}
+                            className={`text-length-option ${selectedTextLength === length.value ? 'selected' : ''}`}
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent event from bubbling to parent
+                              handleTextLengthChange(length.value);
+                            }}
+                            title={length.label}
+                          >
+                            <div className="text-length-icon">
+                              {length.value === 'short' && (
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                  <path d="M3 7h18v2H3V7zm0 4h18v2H3v-2zm0 4h18v2H3v-2z"/>
+                                </svg>
+                              )}
+                              {length.value === 'medium' && (
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                  <path d="M3 7h18v2H3V7zm0 4h12v2H3v-2zm0 4h8v2H3v-2z"/>
+                                </svg>
+                              )}
+                              {length.value === 'long' && (
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                  <path d="M3 7h18v2H3V7zm0 4h18v2H3v-2zm0 4h18v2H3v-2zm0 4h18v2H3v-2z"/>
+                                </svg>
+                              )}
+                            </div>
+                            <span>{length.label}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
                 
                 <div
@@ -421,6 +587,45 @@ function AppContent() {
                               )}
                             </div>
                             <span>{layout}</span>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      {/* Text Length Options */}
+                      <h5>{t('textLength')}</h5>
+                      <div className="text-length-options">
+                        {[
+                          { value: 'short', label: t('short') },
+                          { value: 'medium', label: t('medium') },
+                          { value: 'long', label: t('long') }
+                        ].map(length => (
+                          <div
+                            key={length.value}
+                            className={`text-length-option ${selectedTextLength === length.value ? 'selected' : ''}`}
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent event from bubbling to parent
+                              handleTextLengthChange(length.value);
+                            }}
+                            title={length.label}
+                          >
+                            <div className="text-length-icon">
+                              {length.value === 'short' && (
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                  <path d="M3 7h18v2H3V7zm0 4h18v2H3v-2zm0 4h18v2H3v-2z"/>
+                                </svg>
+                              )}
+                              {length.value === 'medium' && (
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                  <path d="M3 7h18v2H3V7zm0 4h12v2H3v-2zm0 4h8v2H3v-2z"/>
+                                </svg>
+                              )}
+                              {length.value === 'long' && (
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                  <path d="M3 7h18v2H3V7zm0 4h18v2H3v-2zm0 4h18v2H3v-2zm0 4h18v2H3v-2z"/>
+                                </svg>
+                              )}
+                            </div>
+                            <span>{length.label}</span>
                           </div>
                         ))}
                       </div>
@@ -513,6 +718,44 @@ function AppContent() {
                   </div>
                   <span>{t('animatedOutput')}</span>
                 </div>
+              </div>
+            </div>
+
+            {/* Campaign Banner Container */}
+            <div className="input-container">
+              <h3>Campaign Banner</h3>
+              <div className="banner-options">
+                <div className="banner-toggle">
+                  <label className="checkbox-container">
+                    <input
+                      type="checkbox"
+                      checked={addBanner}
+                      onChange={(e) => {
+                        setAddBanner(e.target.checked);
+                        if (!e.target.checked) {
+                          setBannerName(''); // Clear banner name when unchecked
+                        }
+                      }}
+                    />
+                    <span className="checkmark"></span>
+                    Add Campaign Banner
+                  </label>
+                </div>
+                
+                {addBanner && (
+                  <div className="banner-input-section">
+                    <label htmlFor="banner-name">Banner Text:</label>
+                    <input
+                      id="banner-name"
+                      type="text"
+                      value={bannerName}
+                      onChange={(e) => setBannerName(e.target.value)}
+                      placeholder="e.g., Jääkiekko2025, Vaalit2025"
+                      className="banner-input"
+                    />
+                    <small>Enter the campaign banner text (e.g., Jääkiekko2025)</small>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -677,6 +920,18 @@ function AppContent() {
 
             {/* Process Button */}
             <div className="process-container">
+              {backendStatus === 'disconnected' && (
+                <div className="warning-message">
+                  ⚠️ Backend not connected. Please start the backend server.
+                </div>
+              )}
+              
+              {error && (
+                <div className="error-message">
+                  ❌ {error}
+                </div>
+              )}
+              
               <button 
                 className="process-button"
                 onClick={handleProcessFiles}
@@ -687,7 +942,8 @@ function AppContent() {
                   !outputType || 
                   !selectedNewspaper ||
                   (uploadedFiles.length === 0 && textContent.trim() === '') ||
-                  processingStatus === 'processing'
+                  processingStatus === 'processing' ||
+                  backendStatus === 'disconnected'
                 }
               >
                 {processingStatus === 'processing' ? (
@@ -711,7 +967,18 @@ function AppContent() {
                 {/* Text Output Container */}
                 <div className="input-container">
                   <h3>{t('textOutput')}</h3>
+                  
+                  {/* Generated Heading */}
+                  <div className="heading-output">
+                    <h4>Heading:</h4>
+                    <p className="generated-heading">
+                      {processedContent.heading || 'No heading generated'}
+                    </p>
+                  </div>
+                  
+                  {/* Generated Description */}
                   <div className="description-output">
+                    <h4>Description:</h4>
                     <p>
                       {processedContent.description || t('noDescription')}
                     </p>
@@ -721,34 +988,107 @@ function AppContent() {
                 {/* Graphic Output Container */}
                 <div className="input-container">
                   <h3>{t('graphicOutput')}</h3>
-                  <div className="graphic-output">
-                    {processedContent.outputType === 'static' ? (
-                      <div className="static-graphic-preview">
-                        <div className="graphic-placeholder">
-                          <div className="graphic-icon">🖼️</div>
-                          <p>Static Branded Graphic</p>
-                          <small>
-                            {processedContent.platform} {processedContent.contentType} - {processedContent.layout}
-                          </small>
-                          <button className="download-btn" onClick={handleDownload}>
-                            Download Graphic
-                          </button>
+                  
+                  {processedContent.graphicUrls && processedContent.graphicUrls.length > 0 ? (
+                    <div className="graphic-output">
+                      <div className="multiple-graphics-container">
+                        <h4>Generated Graphics ({processedContent.graphicUrls.length} versions)</h4>
+                        <div className="graphics-grid">
+                          {processedContent.graphicUrls.map((graphicUrl, index) => (
+                            <div key={index} className="graphic-version">
+                              <h5>Version {index + 1}</h5>
+                              {processedContent.outputType === 'static' ? (
+                                <div className="static-graphic-preview">
+                                  <div className="graphic-preview-container">
+                                    <img 
+                                      src={getDownloadUrl(graphicUrl.split('/').pop())}
+                                      alt={`Generated branded graphic version ${index + 1}`}
+                                      className="generated-graphic-image"
+                                      onError={(e) => {
+                                        e.target.style.display = 'none';
+                                        e.target.nextSibling.style.display = 'block';
+                                      }}
+                                    />
+                                    <div className="graphic-placeholder" style={{display: 'none'}}>
+                                      <div className="graphic-icon">🖼️</div>
+                                      <p>Static Branded Graphic</p>
+                                      <small>
+                                        {processedContent.platform} {processedContent.contentType} - {processedContent.layout}
+                                      </small>
+                                      <small className="dimensions">{processedContent.dimensions}</small>
+                                      <button className="download-btn" onClick={() => handleDownload(graphicUrl)}>
+                                        Download Version {index + 1}
+                                      </button>
+                                    </div>
+                                  </div>
+                                  <div className="graphic-info">
+                                    <small>
+                                      {processedContent.platform} {processedContent.contentType} - {processedContent.layout}
+                                    </small>
+                                    <small className="dimensions">{processedContent.dimensions}</small>
+                                    <button className="download-btn" onClick={() => handleDownload(graphicUrl)}>
+                                      Download Version {index + 1}
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="animated-graphic-preview">
+                                  <div className="graphic-preview-container">
+                                    <video 
+                                      src={getDownloadUrl(graphicUrl.split('/').pop())}
+                                      className="generated-graphic-video"
+                                      controls
+                                      onError={(e) => {
+                                        e.target.style.display = 'none';
+                                        e.target.nextSibling.style.display = 'block';
+                                      }}
+                                    >
+                                      Your browser does not support the video tag.
+                                    </video>
+                                    <div className="graphic-placeholder" style={{display: 'none'}}>
+                                      <div className="graphic-icon">🎬</div>
+                                      <p>Animated Branded Graphic</p>
+                                      <small>
+                                        {processedContent.platform} {processedContent.contentType} - {processedContent.layout}
+                                      </small>
+                                      <small className="dimensions">{processedContent.dimensions}</small>
+                                      <button className="download-btn" onClick={() => handleDownload(graphicUrl)}>
+                                        Download Version {index + 1}
+                                      </button>
+                                    </div>
+                                  </div>
+                                  <div className="graphic-info">
+                                    <small>
+                                      {processedContent.platform} {processedContent.contentType} - {processedContent.layout}
+                                    </small>
+                                    <small className="dimensions">{processedContent.dimensions}</small>
+                                    <button className="download-btn" onClick={() => handleDownload(graphicUrl)}>
+                                      Download Version {index + 1}
+                                    </button>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          ))}
                         </div>
                       </div>
-                    ) : (
-                      <div className="animated-graphic-preview">
-                        <div className="graphic-placeholder">
-                          <div className="graphic-icon">🎬</div>
-                          <p>Animated Branded Graphic</p>
-                          <small>
-                            {processedContent.platform} {processedContent.contentType} - {processedContent.layout}
-                          </small>
-                          <button className="download-btn" onClick={handleDownload}>
-                            Download Video
-                          </button>
-                        </div>
-                      </div>
-                    )}
+                    </div>
+                  ) : processedContent.graphicUrl ? (
+                    <div className="graphic-output">
+                      <p>Single graphic generated successfully!</p>
+                      <button className="download-btn" onClick={handleDownload}>
+                        Download Graphic
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="graphic-output">
+                      <p>Graphic generation in progress or no image provided...</p>
+                    </div>
+                  )}
+                  
+                  {/* Task Info */}
+                  <div className="task-info">
+                    <small>Task ID: {processedContent.taskId}</small>
                   </div>
                 </div>
               </div>

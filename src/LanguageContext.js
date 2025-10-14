@@ -116,7 +116,11 @@ const translations = {
     textOutput: 'Text Output',
     graphicOutput: 'Graphic Output',
     configureInputs: 'Configure your inputs and click "Generate Content" to see results here',
-    noDescription: 'No description generated'
+    noDescription: 'No description generated',
+    textLength: 'Text Length',
+    short: 'Short',
+    medium: 'Medium',
+    long: 'Long'
   },
   
   fi: {
@@ -224,7 +228,11 @@ const translations = {
     textOutput: 'Tekstituotos',
     graphicOutput: 'Graafinen Tuotos',
     configureInputs: 'Määritä syötteesi ja klikkaa "Luo Sisältö" nähdäksesi tulokset täällä',
-    noDescription: 'Kuvailua ei luotu'
+    noDescription: 'Kuvailua ei luotu',
+    textLength: 'Tekstin pituus',
+    short: 'Lyhyt',
+    medium: 'Keskimääräinen',
+    long: 'Pitkä'
   }
 };
 
