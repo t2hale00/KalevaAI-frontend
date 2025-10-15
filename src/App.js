@@ -384,47 +384,86 @@ function AppContent() {
           </div>
                   <span>Instagram</span>
                   
-                  {/* Instagram Layout Options */}
+                  {/* Instagram Content Type Options */}
                   {selectedPlatform === 'instagram' && (
-                    <div className="platform-layout-options">
-                      <h5>{t('layoutOptions')}</h5>
-                      <div className="layout-options">
-                        {[t('square'), t('portrait')].map(layout => (
-                          <div
-                            key={layout}
-                            className={`layout-option ${selectedLayout === layout ? 'selected' : ''}`}
-                            onClick={(e) => {
-                              e.stopPropagation(); // Prevent event from bubbling to parent
-                              if (selectedLayout === layout) {
-                                setSelectedLayout(''); // Unselect if clicking the same option
-                              } else {
-                                setSelectedLayout(layout); // Select the new option
-                              }
-                            }}
-                            title={layout}
-                          >
-                            <div className="layout-icon">
-                              {layout === t('square') && (
-                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                                </svg>
-                              )}
-                              {layout === t('portrait') && (
-                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                  <rect x="5" y="3" width="14" height="18" rx="2" ry="2"/>
-                                </svg>
-                              )}
-                              {layout === t('landscape') && (
-                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                  <rect x="3" y="5" width="18" height="14" rx="2" ry="2"/>
-                                </svg>
-                              )}
-                            </div>
-                            <span>{layout}</span>
+                    <div className="platform-content-options">
+                      <h5>{t('contentType')}</h5>
+                      <div className="content-type-options">
+                        <div
+                          className={`content-type-option ${contentType === 'post' ? 'selected' : ''}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleContentTypeChange('post');
+                          }}
+                          title="Post"
+                        >
+                          <div className="content-type-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                            </svg>
                           </div>
-                        ))}
+                          <span>Post</span>
+                        </div>
+                        <div
+                          className={`content-type-option ${contentType === 'story' ? 'selected' : ''}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleContentTypeChange('story');
+                          }}
+                          title="Story"
+                        >
+                          <div className="content-type-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                              <circle cx="12" cy="12" r="10"/>
+                              <path d="M8 12l2 2 4-4"/>
+                            </svg>
+                          </div>
+                          <span>Story</span>
+                        </div>
                       </div>
                       
+                      {/* Instagram Layout Options - Show after content type is selected */}
+                      {contentType && (
+                        <div className="platform-layout-options">
+                          <h6>{t('layoutOptions')}</h6>
+                          <div className="layout-options">
+                            {getLayoutOptions().map(layout => (
+                              <div
+                                key={layout}
+                                className={`layout-option ${selectedLayout === layout ? 'selected' : ''}`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (selectedLayout === layout) {
+                                    setSelectedLayout('');
+                                  } else {
+                                    setSelectedLayout(layout);
+                                  }
+                                }}
+                                title={layout}
+                              >
+                                <div className="layout-icon">
+                                  {layout === t('square') && (
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                    </svg>
+                                  )}
+                                  {layout === t('portrait') && (
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                      <rect x="5" y="3" width="14" height="18" rx="2" ry="2"/>
+                                    </svg>
+                                  )}
+                                  {layout === t('landscape') && (
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                      <rect x="3" y="5" width="18" height="14" rx="2" ry="2"/>
+                                    </svg>
+                                  )}
+                                </div>
+                                <span>{layout}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -441,47 +480,86 @@ function AppContent() {
                               </div>
                   <span>Facebook</span>
                   
-                  {/* Facebook Layout Options */}
+                  {/* Facebook Content Type Options */}
                   {selectedPlatform === 'facebook' && (
-                    <div className="platform-layout-options">
-                      <h5>{t('layoutOptions')}</h5>
-                      <div className="layout-options">
-                        {[t('square'), t('landscape')].map(layout => (
-                          <div
-                            key={layout}
-                            className={`layout-option ${selectedLayout === layout ? 'selected' : ''}`}
-                            onClick={(e) => {
-                              e.stopPropagation(); // Prevent event from bubbling to parent
-                              if (selectedLayout === layout) {
-                                setSelectedLayout(''); // Unselect if clicking the same option
-                              } else {
-                                setSelectedLayout(layout); // Select the new option
-                              }
-                            }}
-                            title={layout}
-                          >
-                            <div className="layout-icon">
-                              {layout === t('square') && (
-                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                                </svg>
-                              )}
-                              {layout === t('portrait') && (
-                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                  <rect x="5" y="3" width="14" height="18" rx="2" ry="2"/>
-                                </svg>
-                              )}
-                              {layout === t('landscape') && (
-                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                  <rect x="3" y="5" width="18" height="14" rx="2" ry="2"/>
-                                </svg>
-                              )}
-                            </div>
-                            <span>{layout}</span>
+                    <div className="platform-content-options">
+                      <h5>{t('contentType')}</h5>
+                      <div className="content-type-options">
+                        <div
+                          className={`content-type-option ${contentType === 'post' ? 'selected' : ''}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleContentTypeChange('post');
+                          }}
+                          title="Post"
+                        >
+                          <div className="content-type-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                            </svg>
                           </div>
-                        ))}
+                          <span>Post</span>
+                        </div>
+                        <div
+                          className={`content-type-option ${contentType === 'story' ? 'selected' : ''}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleContentTypeChange('story');
+                          }}
+                          title="Story"
+                        >
+                          <div className="content-type-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                              <circle cx="12" cy="12" r="10"/>
+                              <path d="M8 12l2 2 4-4"/>
+                            </svg>
+                          </div>
+                          <span>Story</span>
+                        </div>
                       </div>
                       
+                      {/* Facebook Layout Options - Show after content type is selected */}
+                      {contentType && (
+                        <div className="platform-layout-options">
+                          <h6>{t('layoutOptions')}</h6>
+                          <div className="layout-options">
+                            {getLayoutOptions().map(layout => (
+                              <div
+                                key={layout}
+                                className={`layout-option ${selectedLayout === layout ? 'selected' : ''}`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (selectedLayout === layout) {
+                                    setSelectedLayout('');
+                                  } else {
+                                    setSelectedLayout(layout);
+                                  }
+                                }}
+                                title={layout}
+                              >
+                                <div className="layout-icon">
+                                  {layout === t('square') && (
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                    </svg>
+                                  )}
+                                  {layout === t('portrait') && (
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                      <rect x="5" y="3" width="14" height="18" rx="2" ry="2"/>
+                                    </svg>
+                                  )}
+                                  {layout === t('landscape') && (
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                      <rect x="3" y="5" width="18" height="14" rx="2" ry="2"/>
+                                    </svg>
+                                  )}
+                                </div>
+                                <span>{layout}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -498,133 +576,115 @@ function AppContent() {
               </div>
                   <span>LinkedIn</span>
                   
-                  {/* LinkedIn Layout Options */}
+                  {/* LinkedIn Content Type Options */}
                   {selectedPlatform === 'linkedin' && (
-                    <div className="platform-layout-options">
-                      <h5>{t('layoutOptions')}</h5>
-                      <div className="layout-options">
-                        {[t('landscape')].map(layout => (
-                          <div
-                            key={layout}
-                            className={`layout-option ${selectedLayout === layout ? 'selected' : ''}`}
-                            onClick={(e) => {
-                              e.stopPropagation(); // Prevent event from bubbling to parent
-                              if (selectedLayout === layout) {
-                                setSelectedLayout(''); // Unselect if clicking the same option
-                              } else {
-                                setSelectedLayout(layout); // Select the new option
-                              }
-                            }}
-                            title={layout}
-                          >
-                            <div className="layout-icon">
-                              {layout === t('square') && (
-                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                                </svg>
-                              )}
-                              {layout === t('portrait') && (
-                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                  <rect x="5" y="3" width="14" height="18" rx="2" ry="2"/>
-                                </svg>
-                              )}
-                              {layout === t('landscape') && (
-                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                  <rect x="3" y="5" width="18" height="14" rx="2" ry="2"/>
-                                </svg>
-                              )}
-                            </div>
-                            <span>{layout}</span>
+                    <div className="platform-content-options">
+                      <h5>{t('contentType')}</h5>
+                      <div className="content-type-options">
+                        <div
+                          className={`content-type-option ${contentType === 'post' ? 'selected' : ''}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleContentTypeChange('post');
+                          }}
+                          title="Post"
+                        >
+                          <div className="content-type-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                            </svg>
                           </div>
-                        ))}
+                          <span>Post</span>
+                        </div>
                       </div>
                       
+                      {/* LinkedIn Layout Options - Show after content type is selected */}
+                      {contentType && (
+                        <div className="platform-layout-options">
+                          <h6>{t('layoutOptions')}</h6>
+                          <div className="layout-options">
+                            {getLayoutOptions().map(layout => (
+                              <div
+                                key={layout}
+                                className={`layout-option ${selectedLayout === layout ? 'selected' : ''}`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (selectedLayout === layout) {
+                                    setSelectedLayout('');
+                                  } else {
+                                    setSelectedLayout(layout);
+                                  }
+                                }}
+                                title={layout}
+                              >
+                                <div className="layout-icon">
+                                  {layout === t('square') && (
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                    </svg>
+                                  )}
+                                  {layout === t('portrait') && (
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                      <rect x="5" y="3" width="14" height="18" rx="2" ry="2"/>
+                                    </svg>
+                                  )}
+                                  {layout === t('landscape') && (
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                      <rect x="3" y="5" width="18" height="14" rx="2" ry="2"/>
+                                    </svg>
+                                  )}
+                                </div>
+                                <span>{layout}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
               </div>
               
-              {/* Content Type Selection */}
-              {selectedPlatform && (
-                <div className="content-type-section">
-                  <h4>{t('contentType')}</h4>
-                  <div className="content-type-options">
-                    <div
-                      className={`content-type-option ${contentType === 'post' ? 'selected' : ''}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleContentTypeChange('post');
-                      }}
-                      title="Post"
-                    >
-                      <div className="content-type-icon">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
-                        </svg>
-                      </div>
-                      <span>{t('post')}</span>
-                    </div>
-                    {selectedPlatform !== 'linkedin' && (
+              {/* Text Length Options - Only for Posts */}
+              {contentType === 'post' && (
+                <div className="text-length-section">
+                  <h4>{t('textLength')}</h4>
+                  <div className="text-length-options">
+                    {[
+                      { value: 'short', label: t('short') },
+                      { value: 'medium', label: t('medium') },
+                      { value: 'long', label: t('long') }
+                    ].map(length => (
                       <div
-                        className={`content-type-option ${contentType === 'story' ? 'selected' : ''}`}
+                        key={length.value}
+                        className={`text-length-option ${selectedTextLength === length.value ? 'selected' : ''}`}
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleContentTypeChange('story');
+                          handleTextLengthChange(length.value);
                         }}
-                        title="Story"
+                        title={length.label}
                       >
-                        <div className="content-type-icon">
-                          <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                          </svg>
+                        <div className="text-length-icon">
+                          {length.value === 'short' && (
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M3 7h18v2H3V7zm0 4h18v2H3v-2zm0 4h18v2H3v-2z"/>
+                            </svg>
+                          )}
+                          {length.value === 'medium' && (
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M3 7h18v2H3V7zm0 4h12v2H3v-2zm0 4h8v2H3v-2z"/>
+                            </svg>
+                          )}
+                          {length.value === 'long' && (
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M3 7h18v2H3V7zm0 4h18v2H3v-2zm0 4h18v2H3v-2zm0 4h18v2H3v-2z"/>
+                            </svg>
+                          )}
                         </div>
-                        <span>{t('story')}</span>
+                        <span>{length.label}</span>
                       </div>
-                    )}
+                    ))}
                   </div>
-                  
-                  {/* Text Length Options - Only for Posts */}
-                  {contentType === 'post' && (
-                    <div className="text-length-section">
-                      <h5>{t('textLength')}</h5>
-                      <div className="text-length-options">
-                        {[
-                          { value: 'short', label: t('short') },
-                          { value: 'medium', label: t('medium') },
-                          { value: 'long', label: t('long') }
-                        ].map(length => (
-                          <div
-                            key={length.value}
-                            className={`text-length-option ${selectedTextLength === length.value ? 'selected' : ''}`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleTextLengthChange(length.value);
-                            }}
-                            title={length.label}
-                          >
-                            <div className="text-length-icon">
-                              {length.value === 'short' && (
-                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                  <path d="M3 7h18v2H3V7zm0 4h18v2H3v-2zm0 4h18v2H3v-2z"/>
-                                </svg>
-                              )}
-                              {length.value === 'medium' && (
-                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                  <path d="M3 7h18v2H3V7zm0 4h12v2H3v-2zm0 4h8v2H3v-2z"/>
-                                </svg>
-                              )}
-                              {length.value === 'long' && (
-                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                  <path d="M3 7h18v2H3V7zm0 4h18v2H3v-2zm0 4h18v2H3v-2zm0 4h18v2H3v-2z"/>
-                                </svg>
-                              )}
-                            </div>
-                            <span>{length.label}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                 </div>
               )}
             </div>
