@@ -61,19 +61,23 @@ function AppContent() {
     if (selectedPlatform === 'instagram') {
       if (contentType === 'story') {
         return [t('portrait')];
+      } else if (contentType === 'post') {
+        return [t('square'), t('portrait')];
       } else {
-        // For posts or when content type not selected, show all Instagram options
+        // When content type not selected, show all Instagram options
         return [t('square'), t('portrait')];
       }
     } else if (selectedPlatform === 'facebook') {
       if (contentType === 'story') {
-        return [t('portrait')];
+        return [t('portrait')]; // Facebook stories only support portrait
+      } else if (contentType === 'post') {
+        return [t('square'), t('landscape')]; // Facebook posts support square and landscape
       } else {
-        // For posts or when content type not selected, show all Facebook options
+        // When content type not selected, show all Facebook options
         return [t('square'), t('landscape')];
       }
     } else if (selectedPlatform === 'linkedin') {
-      // LinkedIn only supports posts, so always show landscape
+      // LinkedIn only supports posts with landscape
       return [t('landscape')];
     }
     return [];
@@ -154,7 +158,12 @@ function AppContent() {
         formData.append('text_content', textContent);
       }
       
-      formData.append('text_length', selectedTextLength);
+      // Only append text_length for posts (stories don't need it)
+      if (contentType === 'post') {
+        formData.append('text_length', selectedTextLength);
+      } else {
+        formData.append('text_length', 'short'); // Default for stories
+      }
       
       // Add banner options
       formData.append('add_banner', addBanner.toString());
@@ -176,6 +185,8 @@ function AppContent() {
         taskId: response.task_id,
         heading: response.generated_text.heading,
         description: response.generated_text.description,
+        headings: response.headings || [response.generated_text.heading],
+        descriptions: response.descriptions || [response.generated_text.description],
         graphicUrl: response.graphic_url,
         graphicUrls: response.graphic_urls || [response.graphic_url].filter(Boolean),
         fileFormat: response.file_format,
@@ -239,7 +250,20 @@ function AppContent() {
       setContentType(''); // Unselect if clicking the same content type
     } else {
       setContentType(type); // Select the new content type
-      // Don't reset layout - let user keep their selection
+      
+      // Check if current layout is valid for the new content type
+      const validLayouts = getLayoutOptions().map(option => {
+        // Convert translated layout names back to keys
+        if (option === t('square')) return 'square';
+        if (option === t('portrait')) return 'portrait';
+        if (option === t('landscape')) return 'landscape';
+        return option;
+      });
+      
+      // Reset layout if current selection is not valid for the new content type
+      if (selectedLayout && !validLayouts.includes(selectedLayout)) {
+        setSelectedLayout('');
+      }
     }
   };
 
@@ -401,44 +425,6 @@ function AppContent() {
                         ))}
                       </div>
                       
-                      {/* Text Length Options */}
-                      <h5>{t('textLength')}</h5>
-                      <div className="text-length-options">
-                        {[
-                          { value: 'short', label: t('short') },
-                          { value: 'medium', label: t('medium') },
-                          { value: 'long', label: t('long') }
-                        ].map(length => (
-                          <div
-                            key={length.value}
-                            className={`text-length-option ${selectedTextLength === length.value ? 'selected' : ''}`}
-                            onClick={(e) => {
-                              e.stopPropagation(); // Prevent event from bubbling to parent
-                              handleTextLengthChange(length.value);
-                            }}
-                            title={length.label}
-                          >
-                            <div className="text-length-icon">
-                              {length.value === 'short' && (
-                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                  <path d="M3 7h18v2H3V7zm0 4h18v2H3v-2zm0 4h18v2H3v-2z"/>
-                                </svg>
-                              )}
-                              {length.value === 'medium' && (
-                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                  <path d="M3 7h18v2H3V7zm0 4h12v2H3v-2zm0 4h8v2H3v-2z"/>
-                                </svg>
-                              )}
-                              {length.value === 'long' && (
-                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                  <path d="M3 7h18v2H3V7zm0 4h18v2H3v-2zm0 4h18v2H3v-2zm0 4h18v2H3v-2z"/>
-                                </svg>
-                              )}
-                            </div>
-                            <span>{length.label}</span>
-                          </div>
-                        ))}
-                      </div>
                     </div>
                   )}
                 </div>
@@ -496,44 +482,6 @@ function AppContent() {
                         ))}
                       </div>
                       
-                      {/* Text Length Options */}
-                      <h5>{t('textLength')}</h5>
-                      <div className="text-length-options">
-                        {[
-                          { value: 'short', label: t('short') },
-                          { value: 'medium', label: t('medium') },
-                          { value: 'long', label: t('long') }
-                        ].map(length => (
-                          <div
-                            key={length.value}
-                            className={`text-length-option ${selectedTextLength === length.value ? 'selected' : ''}`}
-                            onClick={(e) => {
-                              e.stopPropagation(); // Prevent event from bubbling to parent
-                              handleTextLengthChange(length.value);
-                            }}
-                            title={length.label}
-                          >
-                            <div className="text-length-icon">
-                              {length.value === 'short' && (
-                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                  <path d="M3 7h18v2H3V7zm0 4h18v2H3v-2zm0 4h18v2H3v-2z"/>
-                                </svg>
-                              )}
-                              {length.value === 'medium' && (
-                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                  <path d="M3 7h18v2H3V7zm0 4h12v2H3v-2zm0 4h8v2H3v-2z"/>
-                                </svg>
-                              )}
-                              {length.value === 'long' && (
-                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                  <path d="M3 7h18v2H3V7zm0 4h18v2H3v-2zm0 4h18v2H3v-2zm0 4h18v2H3v-2z"/>
-                                </svg>
-                              )}
-                            </div>
-                            <span>{length.label}</span>
-                          </div>
-                        ))}
-                      </div>
                     </div>
                   )}
                 </div>
@@ -591,44 +539,6 @@ function AppContent() {
                         ))}
                       </div>
                       
-                      {/* Text Length Options */}
-                      <h5>{t('textLength')}</h5>
-                      <div className="text-length-options">
-                        {[
-                          { value: 'short', label: t('short') },
-                          { value: 'medium', label: t('medium') },
-                          { value: 'long', label: t('long') }
-                        ].map(length => (
-                          <div
-                            key={length.value}
-                            className={`text-length-option ${selectedTextLength === length.value ? 'selected' : ''}`}
-                            onClick={(e) => {
-                              e.stopPropagation(); // Prevent event from bubbling to parent
-                              handleTextLengthChange(length.value);
-                            }}
-                            title={length.label}
-                          >
-                            <div className="text-length-icon">
-                              {length.value === 'short' && (
-                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                  <path d="M3 7h18v2H3V7zm0 4h18v2H3v-2zm0 4h18v2H3v-2z"/>
-                                </svg>
-                              )}
-                              {length.value === 'medium' && (
-                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                  <path d="M3 7h18v2H3V7zm0 4h12v2H3v-2zm0 4h8v2H3v-2z"/>
-                                </svg>
-                              )}
-                              {length.value === 'long' && (
-                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                  <path d="M3 7h18v2H3V7zm0 4h18v2H3v-2zm0 4h18v2H3v-2zm0 4h18v2H3v-2z"/>
-                                </svg>
-                              )}
-                            </div>
-                            <span>{length.label}</span>
-                          </div>
-                        ))}
-                      </div>
                     </div>
                   )}
                 </div>
@@ -672,6 +582,49 @@ function AppContent() {
                       </div>
                     )}
                   </div>
+                  
+                  {/* Text Length Options - Only for Posts */}
+                  {contentType === 'post' && (
+                    <div className="text-length-section">
+                      <h5>{t('textLength')}</h5>
+                      <div className="text-length-options">
+                        {[
+                          { value: 'short', label: t('short') },
+                          { value: 'medium', label: t('medium') },
+                          { value: 'long', label: t('long') }
+                        ].map(length => (
+                          <div
+                            key={length.value}
+                            className={`text-length-option ${selectedTextLength === length.value ? 'selected' : ''}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleTextLengthChange(length.value);
+                            }}
+                            title={length.label}
+                          >
+                            <div className="text-length-icon">
+                              {length.value === 'short' && (
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                  <path d="M3 7h18v2H3V7zm0 4h18v2H3v-2zm0 4h18v2H3v-2z"/>
+                                </svg>
+                              )}
+                              {length.value === 'medium' && (
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                  <path d="M3 7h18v2H3V7zm0 4h12v2H3v-2zm0 4h8v2H3v-2z"/>
+                                </svg>
+                              )}
+                              {length.value === 'long' && (
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                  <path d="M3 7h18v2H3V7zm0 4h18v2H3v-2zm0 4h18v2H3v-2zm0 4h18v2H3v-2z"/>
+                                </svg>
+                              )}
+                            </div>
+                            <span>{length.label}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -968,21 +921,49 @@ function AppContent() {
                 <div className="input-container">
                   <h3>{t('textOutput')}</h3>
                   
-                  {/* Generated Heading */}
-                  <div className="heading-output">
-                    <h4>Heading:</h4>
-                    <p className="generated-heading">
-                      {processedContent.heading || 'No heading generated'}
-                    </p>
-                  </div>
-                  
-                  {/* Generated Description */}
-                  <div className="description-output">
-                    <h4>Description:</h4>
-                    <p>
-                      {processedContent.description || t('noDescription')}
-                    </p>
-                  </div>
+                  {/* Generated Text Versions */}
+                  {processedContent.headings && processedContent.descriptions ? (
+                    <div className="text-versions-container">
+                      {processedContent.headings.map((heading, index) => (
+                        <div key={index} className="text-version-item">
+                          <h4>Version {index + 1}</h4>
+                          
+                          {/* Generated Heading */}
+                          <div className="heading-output">
+                            <h5>Heading:</h5>
+                            <p className="generated-heading">
+                              {heading || 'No heading generated'}
+                            </p>
+                          </div>
+                          
+                          {/* Generated Description */}
+                          <div className="description-output">
+                            <h5>Description:</h5>
+                            <p>
+                              {processedContent.descriptions[index] || t('noDescription')}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    /* Fallback for single version */
+                    <>
+                      <div className="heading-output">
+                        <h4>Heading:</h4>
+                        <p className="generated-heading">
+                          {processedContent.heading || 'No heading generated'}
+                        </p>
+                      </div>
+                      
+                      <div className="description-output">
+                        <h4>Description:</h4>
+                        <p>
+                          {processedContent.description || t('noDescription')}
+                        </p>
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 {/* Graphic Output Container */}
