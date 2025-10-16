@@ -44,6 +44,7 @@ const translations = {
     // Processing
     processButton: '🚀 Process Content',
     processing: 'Processing...',
+    generatingContent: 'Generating',
     
     // Results
     resultsTitle: '✨ Processed Content',
@@ -156,6 +157,7 @@ const translations = {
     // Processing
     processButton: '🚀 Käsittele Sisältö',
     processing: 'Käsitellään...',
+    generatingContent: 'Luodaan',
     
     // Results
     resultsTitle: '✨ Käsitelty Sisältö',

@@ -380,25 +380,25 @@ section h4 {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.platform-option.selected, .content-type-option.selected, .layout-option.selected, .output-type-option.selected, .text-length-option.selected {
+.platform-option.selected, .output-type-option.selected, .text-length-option.selected {
   background: #D4C4A8; /* Kaleva Media beige */
   border-color: #D4C4A8;
   box-shadow: 0 4px 8px rgba(212, 196, 168, 0.3);
 }
 
-.platform-option.selected span, .content-type-option.selected span, .output-type-option.selected span, .text-length-option.selected span {
+.platform-option.selected span, .output-type-option.selected span, .text-length-option.selected span {
   color: #2D3748; /* Dark text for better contrast with beige */
 }
 
-/* Layout option selected state - different color for better visibility */
-.layout-option.selected {
+/* Content type and layout option selected state - consistent dark gold styling */
+.content-type-option.selected, .layout-option.selected {
   background: #B09050; /* Darker gold for better visibility */
   border-color: #B09050;
   box-shadow: 0 4px 8px rgba(176, 144, 80, 0.3);
 }
 
-/* Keep layout option text dark even when selected */
-.layout-option.selected span {
+/* Keep content type and layout option text white when selected */
+.content-type-option.selected span, .layout-option.selected span {
   color: white !important; /* White text for better contrast with gold */
   font-weight: 600;
 }
@@ -515,9 +515,28 @@ section h4 {
 }
 
 .newspaper-option.selected {
-  border: 3px solid #D4C4A8; /* Kaleva Media beige */
-  box-shadow: 0 4px 12px rgba(212, 196, 168, 0.3);
-  transform: translateY(-1px);
+  border: 4px solid #B09050; /* Dark gold for better visibility */
+  box-shadow: 0 6px 16px rgba(176, 144, 80, 0.4);
+  transform: translateY(-2px) scale(1.05);
+  position: relative;
+}
+
+.newspaper-option.selected::after {
+  content: '✓';
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #B09050;
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Selected span styles removed - no longer using text labels */
@@ -1696,20 +1715,22 @@ section h4 {
 
 .generated-graphic-image {
   max-width: 100%;
-  max-height: 500px;
+  max-height: 300px;
   width: auto;
   height: auto;
   border-radius: 8px;
   display: block;
+  object-fit: contain;
 }
 
 .generated-graphic-video {
   max-width: 100%;
-  max-height: 500px;
+  max-height: 300px;
   width: auto;
   height: auto;
   border-radius: 8px;
   display: block;
+  object-fit: contain;
 }
 
 .graphic-info {
@@ -1850,4 +1871,57 @@ section h4 {
   .graphic-version .generated-graphic-video {
     max-height: 250px;
   }
+}
+
+/* Full-page processing overlay */
+.processing-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+}
+
+.processing-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+}
+
+.processing-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #B09050;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+.processing-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2D3748;
+  margin-bottom: 0.5rem;
+}
+
+.processing-message {
+  color: #718096;
+  font-size: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

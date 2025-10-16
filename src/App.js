@@ -54,7 +54,7 @@ function AppContent() {
   const [backendStatus, setBackendStatus] = useState('checking');
   const [addBanner, setAddBanner] = useState(false);
   const [bannerName, setBannerName] = useState('');
-  const [selectedTextLength, setSelectedTextLength] = useState('medium'); // 'short', 'medium', 'long'
+  const [selectedTextLength, setSelectedTextLength] = useState(''); // 'short', 'medium', 'long'
 
   // Layout options based on platform and content type
   const getLayoutOptions = () => {
@@ -160,7 +160,7 @@ function AppContent() {
       
       // Only append text_length for posts (stories don't need it)
       if (contentType === 'post') {
-        formData.append('text_length', selectedTextLength);
+        formData.append('text_length', selectedTextLength || 'medium'); // Default to medium if none selected
       } else {
         formData.append('text_length', 'short'); // Default for stories
       }
@@ -274,6 +274,19 @@ function AppContent() {
 
   return (
     <div className="app">
+      {/* Full-page processing overlay */}
+      {processingStatus === 'processing' && (
+        <div className="processing-overlay">
+          <div className="processing-content">
+            <div className="processing-spinner"></div>
+            <div className="processing-title">{t('processing')}</div>
+            <div className="processing-message">
+              {t('generatingContent')} {selectedNewspaper} {contentType}...
+            </div>
+          </div>
+        </div>
+      )}
+      
       <header className="app-header">
         <div className="header-content">
           <div className="header-text">
@@ -959,14 +972,7 @@ function AppContent() {
                   backendStatus === 'disconnected'
                 }
               >
-                {processingStatus === 'processing' ? (
-                  <>
-                    <div className="spinner"></div>
-                    {t('processing')}
-                  </>
-                ) : (
-                  t('generateContent')
-                )}
+                {t('generateContent')}
               </button>
             </div>
           </div>
