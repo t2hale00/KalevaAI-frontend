@@ -743,6 +743,18 @@ section h4 {
   background-color: #f5f1e8;
 }
 
+.dropzone.disabled {
+  border-color: #d1d5db;
+  background-color: #f3f4f6;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.dropzone.disabled:hover {
+  border-color: #d1d5db;
+  background-color: #f3f4f6;
+}
+
 .dropzone-content {
   display: flex;
   flex-direction: column;

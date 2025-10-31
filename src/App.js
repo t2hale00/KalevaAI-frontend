@@ -127,7 +127,8 @@ function AppContent() {
       'image/*': ['.jpeg', '.jpg', '.png', '.webp'],
       'video/*': ['.mp4', '.mov', '.avi']
     },
-    multiple: true
+    multiple: true,
+    disabled: uploadedFiles.length > 0  // Disable when files already uploaded
   });
 
   const handleProcessFiles = async () => {
@@ -272,6 +273,36 @@ function AppContent() {
     setSelectedTextLength(length);
   };
 
+  // Function to check what's missing
+  const checkMissingFields = () => {
+    const missing = [];
+    
+    if (!selectedPlatform) missing.push(t('socialMediaPlatform'));
+    if (!contentType) missing.push(t('contentType'));
+    if (!selectedLayout) missing.push(t('layoutOptions'));
+    if (!outputType) missing.push(t('outputType'));
+    if (!selectedNewspaper) missing.push(t('newspaper'));
+    if (uploadedFiles.length === 0 && textContent.trim() === '') {
+      missing.push(t('uploadImage') + ' / ' + t('textContent'));
+    }
+    
+    return missing;
+  };
+
+  // Handle generate button click with validation
+  const handleGenerateClick = () => {
+    const missing = checkMissingFields();
+    
+    if (missing.length > 0) {
+      setError(t('missingFields') + ': ' + missing.join(', '));
+      return;
+    }
+    
+    // Clear any previous errors and proceed
+    setError(null);
+    handleProcessFiles();
+  };
+
   return (
     <div className="app">
       {/* Full-page processing overlay */}
@@ -312,15 +343,17 @@ function AppContent() {
                   <h4>{t('uploadImage')}</h4>
           <div 
             {...getRootProps()} 
-            className={`dropzone ${isDragActive ? 'active' : ''}`}
+            className={`dropzone ${isDragActive ? 'active' : ''} ${uploadedFiles.length > 0 ? 'disabled' : ''}`}
           >
             <input {...getInputProps()} />
             <div className="dropzone-content">
               <div className="upload-icon">📁</div>
               <p>
-                {isDragActive 
-                          ? 'Drop files here...'
-                          : 'Drag & drop images here, or click to select'
+                {uploadedFiles.length > 0
+                  ? t('uploadDisabled')
+                  : isDragActive 
+                    ? t('uploadDragActive')
+                    : t('uploadDragText')
                 }
               </p>
                       <small>Supports: JPEG, PNG, WebP</small>
@@ -960,14 +993,8 @@ function AppContent() {
               
               <button 
                 className="process-button"
-                onClick={handleProcessFiles}
+                onClick={handleGenerateClick}
                 disabled={
-                  !selectedPlatform || 
-                  !contentType || 
-                  !selectedLayout || 
-                  !outputType || 
-                  !selectedNewspaper ||
-                  (uploadedFiles.length === 0 && textContent.trim() === '') ||
                   processingStatus === 'processing' ||
                   backendStatus === 'disconnected'
                 }

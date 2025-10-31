@@ -26,6 +26,7 @@ const translations = {
     uploadTitle: '📁 Upload Media (Optional)',
     uploadDragText: 'Drag & drop files here, or click to select',
     uploadDragActive: 'Drop your files here...',
+    uploadDisabled: 'Remove existing file to upload a new one',
     uploadSupported: 'Supports images (JPEG, PNG, WebP) and videos (MP4, MOV, AVI)',
     uploadedFiles: 'Uploaded Files',
     
@@ -127,7 +128,8 @@ const translations = {
     categoryText: 'Category Text:',
     categoryTextPlaceholder: 'Enter the category text',
     categoryTextExample: 'Enter the category text (e.g., Jääkiekko2025, Vaalit2025)',
-    backendDisconnected: 'Backend not connected. Please start the backend server.'
+    backendDisconnected: 'Backend not connected. Please start the backend server.',
+    missingFields: 'Missing required fields'
   },
   
   fi: {
@@ -145,6 +147,7 @@ const translations = {
     uploadTitle: '📁 Lataa Media (Valinnainen)',
     uploadDragText: 'Vedä ja pudota tiedostot tähän tai klikkaa valitaksesi',
     uploadDragActive: 'Pudota tiedostot tähän...',
+    uploadDisabled: 'Poista olemassa oleva tiedosto ladataksesi uuden',
     uploadSupported: 'Tukee kuvia (JPEG, PNG, WebP) ja videoita (MP4, MOV, AVI)',
     uploadedFiles: 'Ladatut Tiedostot',
     
@@ -246,7 +249,8 @@ const translations = {
     categoryText: 'Kategorian Teksti:',
     categoryTextPlaceholder: 'Syötä kategorian teksti',
     categoryTextExample: 'Syötä kategorian teksti (esim. Jääkiekko2025, Vaalit2025)',
-    backendDisconnected: 'Backend ei ole yhdistetty. Ole hyvä ja käynnistä backend-palvelin.'
+    backendDisconnected: 'Backend ei ole yhdistetty. Ole hyvä ja käynnistä backend-palvelin.',
+    missingFields: 'Puuttuvat pakolliset kentät'
   }
 };
 
