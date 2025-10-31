@@ -395,7 +395,7 @@ function AppContent() {
                       <path fill="url(#instagram-gradient)" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
                     </svg>
           </div>
-                  <span>Instagram</span>
+                  <span>{t('instagram')}</span>
                   
                   {/* Instagram Content Type Options */}
                   {selectedPlatform === 'instagram' && (
@@ -408,14 +408,14 @@ function AppContent() {
                             e.stopPropagation();
                             handleContentTypeChange('post');
                           }}
-                          title="Post"
+                          title={t('post')}
                         >
                           <div className="content-type-icon">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                               <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
                             </svg>
                           </div>
-                          <span>Post</span>
+                          <span>{t('post')}</span>
                         </div>
                         <div
                           className={`content-type-option ${contentType === 'story' ? 'selected' : ''}`}
@@ -423,7 +423,7 @@ function AppContent() {
                             e.stopPropagation();
                             handleContentTypeChange('story');
                           }}
-                          title="Story"
+                          title={t('story')}
                         >
                           <div className="content-type-icon">
                             <svg viewBox="0 0 24 24" fill="currentColor">
@@ -431,7 +431,7 @@ function AppContent() {
                               <path d="M8 12l2 2 4-4"/>
                             </svg>
                           </div>
-                          <span>Story</span>
+                          <span>{t('story')}</span>
                         </div>
                       </div>
                       
@@ -491,7 +491,7 @@ function AppContent() {
                       <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                     </svg>
                               </div>
-                  <span>Facebook</span>
+                  <span>{t('facebook')}</span>
                   
                   {/* Facebook Content Type Options */}
                   {selectedPlatform === 'facebook' && (
@@ -504,14 +504,14 @@ function AppContent() {
                             e.stopPropagation();
                             handleContentTypeChange('post');
                           }}
-                          title="Post"
+                          title={t('post')}
                         >
                           <div className="content-type-icon">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                               <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
                             </svg>
                           </div>
-                          <span>Post</span>
+                          <span>{t('post')}</span>
                         </div>
                         <div
                           className={`content-type-option ${contentType === 'story' ? 'selected' : ''}`}
@@ -519,7 +519,7 @@ function AppContent() {
                             e.stopPropagation();
                             handleContentTypeChange('story');
                           }}
-                          title="Story"
+                          title={t('story')}
                         >
                           <div className="content-type-icon">
                             <svg viewBox="0 0 24 24" fill="currentColor">
@@ -527,7 +527,7 @@ function AppContent() {
                               <path d="M8 12l2 2 4-4"/>
                             </svg>
                           </div>
-                          <span>Story</span>
+                          <span>{t('story')}</span>
                         </div>
                       </div>
                       
@@ -587,7 +587,7 @@ function AppContent() {
                       <path fill="#0A66C2" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
                     </svg>
               </div>
-                  <span>LinkedIn</span>
+                  <span>{t('linkedin')}</span>
                   
                   {/* LinkedIn Content Type Options */}
                   {selectedPlatform === 'linkedin' && (
@@ -600,14 +600,14 @@ function AppContent() {
                             e.stopPropagation();
                             handleContentTypeChange('post');
                           }}
-                          title="Post"
+                          title={t('post')}
                         >
                           <div className="content-type-icon">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                               <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
                             </svg>
                           </div>
-                          <span>Post</span>
+                          <span>{t('post')}</span>
                         </div>
                       </div>
                       
@@ -716,7 +716,7 @@ function AppContent() {
                       setOutputType('static'); // Select the new option
                     }
                   }}
-                  title="Static Output"
+                  title={t('staticOutput')}
                 >
                   <div className="output-type-icon">
                     <svg viewBox="0 0 24 24" fill="currentColor">
@@ -735,7 +735,7 @@ function AppContent() {
                       setOutputType('animated'); // Select the new option
                     }
                   }}
-                  title="Animated Output"
+                  title={t('animatedOutput')}
                 >
                   <div className="output-type-icon">
                     <svg viewBox="0 0 24 24" fill="currentColor">
@@ -747,9 +747,9 @@ function AppContent() {
               </div>
             </div>
 
-            {/* Campaign Banner Container */}
+            {/* Category Container */}
             <div className="input-container">
-              <h3>Campaign Banner</h3>
+              <h3>{t('category')}</h3>
               <div className="banner-options">
                 <div className="banner-toggle">
                   <label className="checkbox-container">
@@ -759,18 +759,18 @@ function AppContent() {
                       onChange={(e) => {
                         setAddBanner(e.target.checked);
                         if (!e.target.checked) {
-                          setBannerName(''); // Clear banner name when unchecked
+                          setBannerName(''); // Clear category name when unchecked
                         }
                       }}
                     />
                     <span className="checkmark"></span>
-                    Add Campaign Banner
+                    {t('addCategory')}
                   </label>
                 </div>
                 
                 {addBanner && (
                   <div className="banner-input-section">
-                    <label htmlFor="banner-name">Banner Text:</label>
+                    <label htmlFor="banner-name">{t('categoryText')}</label>
                     <input
                       id="banner-name"
                       type="text"
@@ -779,7 +779,7 @@ function AppContent() {
                       placeholder="e.g., Jääkiekko2025, Vaalit2025"
                       className="banner-input"
                     />
-                    <small>Enter the campaign banner text (e.g., Jääkiekko2025)</small>
+                    <small>{t('categoryTextExample')}</small>
                   </div>
                 )}
               </div>
@@ -948,7 +948,7 @@ function AppContent() {
             <div className="process-container">
               {backendStatus === 'disconnected' && (
                 <div className="warning-message">
-                  ⚠️ Backend not connected. Please start the backend server.
+                  ⚠️ {t('backendDisconnected')}
                 </div>
               )}
               

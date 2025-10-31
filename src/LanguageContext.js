@@ -121,7 +121,13 @@ const translations = {
     textLength: 'Text Length',
     short: 'Short',
     medium: 'Medium',
-    long: 'Long'
+    long: 'Long',
+    category: 'Category',
+    addCategory: 'Add Category',
+    categoryText: 'Category Text:',
+    categoryTextPlaceholder: 'Enter the category text',
+    categoryTextExample: 'Enter the category text (e.g., Jääkiekko2025, Vaalit2025)',
+    backendDisconnected: 'Backend not connected. Please start the backend server.'
   },
   
   fi: {
@@ -234,7 +240,13 @@ const translations = {
     textLength: 'Tekstin pituus',
     short: 'Lyhyt',
     medium: 'Keskimääräinen',
-    long: 'Pitkä'
+    long: 'Pitkä',
+    category: 'Kategoria',
+    addCategory: 'Lisää Kategoria',
+    categoryText: 'Kategorian Teksti:',
+    categoryTextPlaceholder: 'Syötä kategorian teksti',
+    categoryTextExample: 'Syötä kategorian teksti (esim. Jääkiekko2025, Vaalit2025)',
+    backendDisconnected: 'Backend ei ole yhdistetty. Ole hyvä ja käynnistä backend-palvelin.'
   }
 };
 
