@@ -55,6 +55,32 @@ function AppContent() {
   const [addBanner, setAddBanner] = useState(false);
   const [bannerName, setBannerName] = useState('');
   const [selectedTextLength, setSelectedTextLength] = useState(''); // 'short', 'medium', 'long'
+  const [showCategorySuggestions, setShowCategorySuggestions] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({
+    platform: false,
+    contentType: false,
+    layout: false,
+    outputType: false,
+    newspaper: false,
+    contentInput: false,
+    category: false
+  });
+  
+  // Category suggestions
+  const categorySuggestions = [
+    'Uutiset',
+    'Matkailu',
+    'Mielipiteet',
+    'Ihmiset ja ilmiöt',
+    'Kulttuuri',
+    'Urheilu',
+    'Talous',
+    'Ympäristö',
+    'Paikalliset uutiset',
+    'Tiede ja teknologia',
+    'Hyvinvointi',
+    'Kuva & tarina'
+  ];
 
   // Layout options based on platform and content type
   const getLayoutOptions = () => {
@@ -119,6 +145,8 @@ function AppContent() {
       preview: URL.createObjectURL(file)
     }));
     setUploadedFiles(prev => [...prev, ...newFiles]);
+    // Clear contentInput error when files are uploaded
+    setFieldErrors(prevErrors => ({ ...prevErrors, contentInput: false }));
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -243,6 +271,15 @@ function AppContent() {
         setSelectedLayout('');
       }
     }
+    // Clear platform, contentType, and layout errors when platform changes
+    setFieldErrors(prev => ({
+      ...prev,
+      platform: false,
+      contentType: false,
+      layout: false
+    }));
+    // Check if all fields are now valid and clear error message
+    checkAndClearError();
   };
 
   // Handle content type changes
@@ -266,6 +303,10 @@ function AppContent() {
         setSelectedLayout('');
       }
     }
+    // Clear contentType error when changed
+    setFieldErrors(prev => ({ ...prev, contentType: false }));
+    // Check if all fields are now valid and clear error message
+    checkAndClearError();
   };
 
   // Handle text length changes
@@ -273,33 +314,100 @@ function AppContent() {
     setSelectedTextLength(length);
   };
 
+  // Handle newspaper selection
+  const handleNewspaperChange = (newspaperName) => {
+    if (selectedNewspaper === newspaperName) {
+      setSelectedNewspaper('');
+    } else {
+      setSelectedNewspaper(newspaperName);
+    }
+    // Clear newspaper error when changed
+    setFieldErrors(prev => ({ ...prev, newspaper: false }));
+    checkAndClearError();
+  };
+
+  // Helper function to check if all fields are valid and clear error message
+  const checkAndClearError = () => {
+    const { missing } = checkMissingFields();
+    if (missing.length === 0) {
+      setError(null);
+    }
+  };
+
+  // Effect to clear error when all fields become valid
+  useEffect(() => {
+    const { missing } = checkMissingFields();
+    if (missing.length === 0) {
+      setError(null);
+    }
+  }, [selectedPlatform, contentType, selectedLayout, outputType, selectedNewspaper, uploadedFiles, textContent, addBanner, bannerName, t]);
+
   // Function to check what's missing
   const checkMissingFields = () => {
     const missing = [];
+    const errors = {
+      platform: false,
+      contentType: false,
+      layout: false,
+      outputType: false,
+      newspaper: false,
+      contentInput: false,
+      category: false
+    };
     
-    if (!selectedPlatform) missing.push(t('socialMediaPlatform'));
-    if (!contentType) missing.push(t('contentType'));
-    if (!selectedLayout) missing.push(t('layoutOptions'));
-    if (!outputType) missing.push(t('outputType'));
-    if (!selectedNewspaper) missing.push(t('newspaper'));
+    if (!selectedPlatform) {
+      missing.push(t('socialMediaPlatform'));
+      errors.platform = true;
+    }
+    if (!contentType) {
+      missing.push(t('contentType'));
+      errors.contentType = true;
+    }
+    if (!selectedLayout) {
+      missing.push(t('layoutOptions'));
+      errors.layout = true;
+    }
+    if (!outputType) {
+      missing.push(t('outputType'));
+      errors.outputType = true;
+    }
+    if (!selectedNewspaper) {
+      missing.push(t('newspaper'));
+      errors.newspaper = true;
+    }
     if (uploadedFiles.length === 0 && textContent.trim() === '') {
       missing.push(t('uploadImage') + ' / ' + t('textContent'));
+      errors.contentInput = true;
+    }
+    if (addBanner && !bannerName.trim()) {
+      missing.push(t('categoryText'));
+      errors.category = true;
     }
     
-    return missing;
+    return { missing, errors };
   };
 
   // Handle generate button click with validation
   const handleGenerateClick = () => {
-    const missing = checkMissingFields();
+    const { missing, errors } = checkMissingFields();
     
     if (missing.length > 0) {
       setError(t('missingFields') + ': ' + missing.join(', '));
+      setFieldErrors(errors);
       return;
     }
     
     // Clear any previous errors and proceed
     setError(null);
+    setFieldErrors({
+      platform: false,
+      contentType: false,
+      layout: false,
+      outputType: false,
+      newspaper: false,
+      contentInput: false,
+      category: false
+    });
     handleProcessFiles();
   };
 
@@ -335,7 +443,7 @@ function AppContent() {
             <h2>{t('inputConfiguration')}</h2>
             
             {/* Content Input Container */}
-            <div className="input-container">
+            <div className={`input-container ${fieldErrors.contentInput ? 'error' : ''}`}>
               <h3>{t('contentInput')}</h3>
               <div className="content-input-grid">
                 {/* Image Upload */}
@@ -378,9 +486,19 @@ function AppContent() {
                     </div>
                     <button 
                       className="remove-file"
-                      onClick={() => setUploadedFiles(prev => 
-                        prev.filter(f => f.id !== file.id)
-                      )}
+                      onClick={() => {
+                        setUploadedFiles(prev => {
+                          const updated = prev.filter(f => f.id !== file.id);
+                          // If removing file leaves no content, check if error should be set
+                          if (updated.length === 0 && textContent.trim() === '') {
+                            // Don't clear error if no content remains
+                          } else {
+                            setFieldErrors(prevErrors => ({ ...prevErrors, contentInput: false }));
+                            checkAndClearError();
+                          }
+                          return updated;
+                        });
+                      }}
                     >
                       ✕
                     </button>
@@ -396,7 +514,12 @@ function AppContent() {
                   <h4>{t('textContent')}</h4>
                   <textarea
                     value={textContent}
-                    onChange={(e) => setTextContent(e.target.value)}
+                    onChange={(e) => {
+                      setTextContent(e.target.value);
+                      // Clear contentInput error when text is entered
+                      setFieldErrors(prev => ({ ...prev, contentInput: false }));
+                      checkAndClearError();
+                    }}
                     placeholder="Enter your text content here..."
                     className="text-input"
                     rows={4}
@@ -406,7 +529,7 @@ function AppContent() {
               </div>
 
             {/* Platform Container */}
-            <div className="input-container">
+            <div className={`input-container ${fieldErrors.platform || fieldErrors.contentType || fieldErrors.layout ? 'error' : ''}`}>
               <h3>{t('socialMediaPlatform')}</h3>
               <div className="platform-options">
                 <div
@@ -484,6 +607,9 @@ function AppContent() {
                                   } else {
                                     setSelectedLayout(layout);
                                   }
+                                  // Clear layout error when changed
+                                  setFieldErrors(prev => ({ ...prev, layout: false }));
+                                  checkAndClearError();
                                 }}
                                 title={layout}
                               >
@@ -580,6 +706,9 @@ function AppContent() {
                                   } else {
                                     setSelectedLayout(layout);
                                   }
+                                  // Clear layout error when changed
+                                  setFieldErrors(prev => ({ ...prev, layout: false }));
+                                  checkAndClearError();
                                 }}
                                 title={layout}
                               >
@@ -660,6 +789,9 @@ function AppContent() {
                                   } else {
                                     setSelectedLayout(layout);
                                   }
+                                  // Clear layout error when changed
+                                  setFieldErrors(prev => ({ ...prev, layout: false }));
+                                  checkAndClearError();
                                 }}
                                 title={layout}
                               >
@@ -736,7 +868,7 @@ function AppContent() {
             </div>
 
             {/* Output Type Container */}
-            <div className="input-container">
+            <div className={`input-container ${fieldErrors.outputType ? 'error' : ''}`}>
               <h3>{t('outputType')}</h3>
               <div className="output-type-options">
                 <div
@@ -748,6 +880,9 @@ function AppContent() {
                     } else {
                       setOutputType('static'); // Select the new option
                     }
+                    // Clear outputType error when changed
+                    setFieldErrors(prev => ({ ...prev, outputType: false }));
+                    checkAndClearError();
                   }}
                   title={t('staticOutput')}
                 >
@@ -767,6 +902,9 @@ function AppContent() {
                     } else {
                       setOutputType('animated'); // Select the new option
                     }
+                    // Clear outputType error when changed
+                    setFieldErrors(prev => ({ ...prev, outputType: false }));
+                    checkAndClearError();
                   }}
                   title={t('animatedOutput')}
                 >
@@ -781,7 +919,7 @@ function AppContent() {
             </div>
 
             {/* Category Container */}
-            <div className="input-container">
+            <div className={`input-container ${fieldErrors.category ? 'error' : ''}`}>
               <h3>{t('category')}</h3>
               <div className="banner-options">
                 <div className="banner-toggle">
@@ -790,10 +928,13 @@ function AppContent() {
                       type="checkbox"
                       checked={addBanner}
                       onChange={(e) => {
-                        setAddBanner(e.target.checked);
-                        if (!e.target.checked) {
+                        const isChecked = e.target.checked;
+                        setAddBanner(isChecked);
+                        if (!isChecked) {
                           setBannerName(''); // Clear category name when unchecked
+                          setFieldErrors(prev => ({ ...prev, category: false }));
                         }
+                        checkAndClearError();
                       }}
                     />
                     <span className="checkmark"></span>
@@ -808,29 +949,56 @@ function AppContent() {
                       id="banner-name"
                       type="text"
                       value={bannerName}
-                      onChange={(e) => setBannerName(e.target.value)}
-                      placeholder="e.g., Jääkiekko2025, Vaalit2025"
+                      onChange={(e) => {
+                        setBannerName(e.target.value);
+                        // Clear category error when text is entered
+                        setFieldErrors(prev => ({ ...prev, category: false }));
+                        checkAndClearError();
+                      }}
+                      onFocus={() => setShowCategorySuggestions(true)}
+                      onBlur={() => {
+                        // Delay hiding to allow clicking on suggestions
+                        setTimeout(() => setShowCategorySuggestions(false), 200);
+                      }}
                       className="banner-input"
                     />
-                    <small>{t('categoryTextExample')}</small>
+                    {showCategorySuggestions && categorySuggestions.length > 0 && (
+                      <div className="category-suggestions">
+                        <div className="category-suggestions-label">Suggestions:</div>
+                        <div className="category-suggestions-list">
+                          {categorySuggestions.map((suggestion, index) => (
+                            <button
+                              key={index}
+                              type="button"
+                              className="category-suggestion-chip"
+                              onMouseDown={(e) => {
+                                e.preventDefault(); // Prevent input blur
+                                setBannerName(suggestion);
+                                setFieldErrors(prev => ({ ...prev, category: false }));
+                                setShowCategorySuggestions(false);
+                                checkAndClearError();
+                              }}
+                            >
+                              {suggestion}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
             </div>
 
             {/* Newspaper Container */}
-            <div className="input-container">
+            <div className={`input-container ${fieldErrors.newspaper ? 'error' : ''}`}>
               <h3>{t('newspaper')}</h3>
               <div className="newspaper-options">
                 <div
                   className={`newspaper-option kaleva ${selectedNewspaper === 'Kaleva' ? 'selected' : ''}`}
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (selectedNewspaper === 'Kaleva') {
-                      setSelectedNewspaper('');
-                    } else {
-                      setSelectedNewspaper('Kaleva');
-                    }
+                    handleNewspaperChange('Kaleva');
                   }}
                   title="Kaleva"
                 >
@@ -843,11 +1011,7 @@ function AppContent() {
                   className={`newspaper-option lapin-kansa ${selectedNewspaper === 'Lapin Kansa' ? 'selected' : ''}`}
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (selectedNewspaper === 'Lapin Kansa') {
-                      setSelectedNewspaper('');
-                    } else {
-                      setSelectedNewspaper('Lapin Kansa');
-                    }
+                    handleNewspaperChange('Lapin Kansa');
                   }}
                   title="Lapin Kansa"
                 >
@@ -860,11 +1024,7 @@ function AppContent() {
                   className={`newspaper-option ilkka-pohjalainen ${selectedNewspaper === 'Ilkka-Pohjalainen' ? 'selected' : ''}`}
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (selectedNewspaper === 'Ilkka-Pohjalainen') {
-                      setSelectedNewspaper('');
-                    } else {
-                      setSelectedNewspaper('Ilkka-Pohjalainen');
-                    }
+                    handleNewspaperChange('Ilkka-Pohjalainen');
                   }}
                   title="Ilkka-Pohjalainen"
                 >
@@ -877,11 +1037,7 @@ function AppContent() {
                   className={`newspaper-option koillissanomat ${selectedNewspaper === 'Koillissanomat' ? 'selected' : ''}`}
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (selectedNewspaper === 'Koillissanomat') {
-                      setSelectedNewspaper('');
-                    } else {
-                      setSelectedNewspaper('Koillissanomat');
-                    }
+                    handleNewspaperChange('Koillissanomat');
                   }}
                   title="Koillissanomat"
                 >
@@ -894,11 +1050,7 @@ function AppContent() {
                   className={`newspaper-option rantalakeus ${selectedNewspaper === 'Rantalakeus' ? 'selected' : ''}`}
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (selectedNewspaper === 'Rantalakeus') {
-                      setSelectedNewspaper('');
-                    } else {
-                      setSelectedNewspaper('Rantalakeus');
-                    }
+                    handleNewspaperChange('Rantalakeus');
                   }}
                   title="Rantalakeus"
                 >
@@ -911,11 +1063,7 @@ function AppContent() {
                   className={`newspaper-option iijokiseutu ${selectedNewspaper === 'Iijokiseutu' ? 'selected' : ''}`}
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (selectedNewspaper === 'Iijokiseutu') {
-                      setSelectedNewspaper('');
-                    } else {
-                      setSelectedNewspaper('Iijokiseutu');
-                    }
+                    handleNewspaperChange('Iijokiseutu');
                   }}
                   title="Iijokiseutu"
                 >
@@ -928,11 +1076,7 @@ function AppContent() {
                   className={`newspaper-option raahen-seutu ${selectedNewspaper === 'Raahen Seutu' ? 'selected' : ''}`}
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (selectedNewspaper === 'Raahen Seutu') {
-                      setSelectedNewspaper('');
-                    } else {
-                      setSelectedNewspaper('Raahen Seutu');
-                    }
+                    handleNewspaperChange('Raahen Seutu');
                   }}
                   title="Raahen Seutu"
                 >
@@ -945,11 +1089,7 @@ function AppContent() {
                   className={`newspaper-option pyhajokiseutu ${selectedNewspaper === 'Pyhäjokiseutu' ? 'selected' : ''}`}
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (selectedNewspaper === 'Pyhäjokiseutu') {
-                      setSelectedNewspaper('');
-                    } else {
-                      setSelectedNewspaper('Pyhäjokiseutu');
-                    }
+                    handleNewspaperChange('Pyhäjokiseutu');
                   }}
                   title="Pyhäjokiseutu"
                 >
@@ -962,11 +1102,7 @@ function AppContent() {
                   className={`newspaper-option siikajokilaakso ${selectedNewspaper === 'Siikajokilaakso' ? 'selected' : ''}`}
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (selectedNewspaper === 'Siikajokilaakso') {
-                      setSelectedNewspaper('');
-                    } else {
-                      setSelectedNewspaper('Siikajokilaakso');
-                    }
+                    handleNewspaperChange('Siikajokilaakso');
                   }}
                   title="Siikajokilaakso"
                 >
