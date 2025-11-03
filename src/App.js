@@ -56,6 +56,7 @@ function AppContent() {
   const [bannerName, setBannerName] = useState('');
   const [selectedTextLength, setSelectedTextLength] = useState(''); // 'short', 'medium', 'long'
   const [showCategorySuggestions, setShowCategorySuggestions] = useState(false);
+  const [fullSizeImage, setFullSizeImage] = useState(null); // Track which image to show in full size
   const [fieldErrors, setFieldErrors] = useState({
     platform: false,
     contentType: false,
@@ -1214,6 +1215,9 @@ function AppContent() {
                                       src={getDownloadUrl(graphicUrl.split('/').pop())}
                                       alt={`Generated branded graphic version ${index + 1}`}
                                       className="generated-graphic-image"
+                                      onClick={() => setFullSizeImage(getDownloadUrl(graphicUrl.split('/').pop()))}
+                                      style={{ cursor: 'pointer' }}
+                                      title="Click to view full size"
                                       onError={(e) => {
                                         e.target.style.display = 'none';
                                         e.target.nextSibling.style.display = 'block';
@@ -1315,6 +1319,26 @@ function AppContent() {
       <footer className="app-footer">
         <p>{t('footer')}</p>
       </footer>
+
+      {/* Full Size Image Modal */}
+      {fullSizeImage && (
+        <div className="image-modal-overlay" onClick={() => setFullSizeImage(null)}>
+          <div className="image-modal-content" onClick={(e) => e.stopPropagation()}>
+            <button 
+              className="image-modal-close" 
+              onClick={() => setFullSizeImage(null)}
+              aria-label="Close"
+            >
+              ×
+            </button>
+            <img 
+              src={fullSizeImage} 
+              alt="Full size graphic"
+              className="image-modal-image"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

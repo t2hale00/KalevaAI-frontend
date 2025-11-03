@@ -2006,3 +2006,78 @@ section h4 {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+/* Full Size Image Modal */
+.image-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  cursor: pointer;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.image-modal-content {
+  position: relative;
+  max-width: 95%;
+  max-height: 95%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: default;
+}
+
+.image-modal-image {
+  max-width: 100%;
+  max-height: 95vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.image-modal-close {
+  position: absolute;
+  top: -45px;
+  right: 0;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  transition: all 0.2s ease;
+  z-index: 10001;
+}
+
+.image-modal-close:hover {
+  background: white;
+  transform: scale(1.1);
+  color: #B09050;
+}
+
+.image-modal-close:active {
+  transform: scale(0.95);
+}
