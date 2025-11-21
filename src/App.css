@@ -390,6 +390,15 @@ section h4 {
   color: #374151;
 }
 
+.text-length-chars {
+  font-size: 0.65rem;
+  font-weight: 400;
+  color: #64748b;
+  margin-top: 0.2rem;
+  display: block;
+  line-height: 1.2;
+}
+
 /* Ensure layout option text is always visible */
 .layout-option span {
   color: #374151 !important;

@@ -830,9 +830,9 @@ function AppContent() {
                   <h4>{t('textLength')}</h4>
                   <div className="text-length-options">
                     {[
-                      { value: 'short', label: t('short') },
-                      { value: 'medium', label: t('medium') },
-                      { value: 'long', label: t('long') }
+                      { value: 'short', label: t('short'), chars: '≤100 characters' },
+                      { value: 'medium', label: t('medium'), chars: '100-500 characters' },
+                      { value: 'long', label: t('long'), chars: '500+ characters' }
                     ].map(length => (
                       <div
                         key={length.value}
@@ -861,6 +861,7 @@ function AppContent() {
                           )}
                         </div>
                         <span>{length.label}</span>
+                        <span className="text-length-chars">{length.chars || ''}</span>
                       </div>
                     ))}
                   </div>
